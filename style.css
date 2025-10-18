@@ -1,8 +1,13 @@
 html, body {
+  /* Set margin and padding to 0 to remove default browser spacing, ensuring the canvas can use the full window size */
   margin: 0;
   padding: 0;
-}
-
-canvas {
-  display: block;
+  /* Use flexbox display to facilitate centre alignment of content both horizontally and vertically */
+  display: flex;
+  /* Align items vertically to the centre of the container */
+  align-items: center;
+  /* Centre content horizontally within the body */
+  justify-content: center; 
+  /* Set the colour to black to match the canvas */
+  background-color: black;
 }

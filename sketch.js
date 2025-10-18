@@ -1,5 +1,6 @@
 function setup() {
-  createCanvas(400, 400);
+  let size = Math.min(windowWidth, windowHeight);
+  createCanvas(size,size);
 }
 
 function draw() {
