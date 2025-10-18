@@ -1,8 +1,100 @@
-html, body {
+/* =============================================================================
+   Aboriginal Art - Styles
+   ============================================================================= */
+
+/* Reset default margins and padding */
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
+/* Body styling */
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Prevent scrollbars */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* Canvas styling (p5.js automatically creates the canvas) */
 canvas {
-  display: block;
+  display: block; /* Remove default inline spacing */
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Optional: Add a title overlay (remove if not needed) */
+.title-overlay {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  color: #f5f5dc;
+  font-size: 24px;
+  font-weight: 300;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  pointer-events: none; /* Don't block canvas interactions */
+  z-index: 10;
+}
+
+/* Optional: Instructions overlay */
+.instructions {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #f5f5dc;
+  font-size: 14px;
+  text-align: center;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0.7;
+}
+
+/* Loading screen (optional) */
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #1a1612;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #f5f5dc;
+  font-size: 18px;
+  z-index: 100;
+}
+
+/* Hide loading when p5.js is ready */
+.loading.hidden {
+  display: none;
+}
+
+/* Responsive design for mobile */
+@media (max-width: 768px) {
+  .title-overlay {
+    font-size: 18px;
+    top: 10px;
+    left: 10px;
+  }
+  
+  .instructions {
+    font-size: 12px;
+    bottom: 10px;
+  }
+}
+
+/* Print styles */
+@media print {
+  body {
+    overflow: visible;
+  }
+  
+  .title-overlay,
+  .instructions {
+    display: none;
+  }
 }
