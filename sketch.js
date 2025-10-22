@@ -1,327 +1,610 @@
-let colors;
-let showGrid = false;
+class Circle {
+  constructor(x, y, r) {
+    this.x = x;
+    this.y = y;
+    this.r = r;
+    this.patternType = floor(random(14));
+    this.colorScheme = floor(random(5));
+    this.irregularity = random(0.02, 0.05);
+  }
+
+  getBackgroundColor() {
+    const bgColors = [
+      [245, 140, 40],
+      [236, 100, 150],
+      [155, 80, 180],
+      [76, 165, 60],
+      [238, 200, 70]
+    ];
+    return color(...bgColors[this.colorScheme]);
+  }
+
+  getPatternColors() {
+    const patterns = [
+      [[255, 30, 157], [255, 255, 255]],
+      [[6, 255, 165], [255, 255, 255]],
+      [[238, 200, 70], [255, 255, 255]],
+      [[255, 107, 53], [0, 0, 0]],
+      [[155, 80, 180], [255, 255, 255]]
+    ];
+    return [color(...patterns[this.colorScheme][0]), color(...patterns[this.colorScheme][1])];
+  }
+
+  drawHandDrawnCircle(x, y, r, fillCol, strokeCol, strokeW) {
+    fill(fillCol);
+    stroke(strokeCol);
+    strokeWeight(strokeW);
+    
+    beginShape();
+    let points = 60;
+    for (let i = 0; i <= points; i++) {
+      let angle = (TWO_PI / points) * i;
+      let jitter = random(-r * this.irregularity, r * this.irregularity);
+      let radius = r + jitter;
+      let px = x + cos(angle) * radius;
+      let py = y + sin(angle) * radius;
+      curveVertex(px, py);
+    }
+    endShape(CLOSE);
+  }
+
+  display() {
+    this.drawHandDrawnCircle(
+      this.x, 
+      this.y, 
+      this.r, 
+      this.getBackgroundColor(), 
+      color(0), 
+      2
+    );
+  }
+
+  displayDotPattern() {
+    let dotSize = this.r * 0.04;
+    let dotSpacing = this.r * 0.1;
+    let colors = this.getPatternColors();
+    fill(colors[0]);
+    noStroke();
+
+    let i = 0;
+    for (let radius = this.r/1.8; radius < this.r; radius += dotSpacing) {
+      let circumference = TWO_PI * radius;
+      let dotCount = floor(circumference / dotSpacing);
+      let angleStep = TWO_PI / dotCount;
+      let offset = i * (TWO_PI / 36);
+
+      for (let j = 0; j < dotCount; j++) {
+        let angle = j * angleStep + offset;
+        let jitterAngle = angle + random(-0.1, 0.1);
+        let jitterRadius = radius + random(-this.r * 0.02, this.r * 0.02);
+        let px = this.x + cos(jitterAngle) * jitterRadius;
+        let py = this.y + sin(jitterAngle) * jitterRadius;
+        let jitterSize = dotSize * random(0.8, 1.2);
+        ellipse(px, py, jitterSize * 2);
+      }
+      i++;
+    }
+  }
+
+  displayRadialLines() {
+    let colors = this.getPatternColors();
+    let numLines = 32;
+    let innerRadius = this.r * 0.35;
+    let outerRadius = this.r * 0.9;
+
+    strokeWeight(this.r * 0.015);
+    
+    for (let i = 0; i < numLines; i++) {
+      stroke(colors[i % 2]);
+      let angle = (TWO_PI / numLines) * i;
+      
+      noFill();
+      beginShape();
+      
+      for (let t = 0; t <= 1; t += 0.2) {
+        let currentRadius = lerp(innerRadius, outerRadius, t);
+        let jitterAngle = angle + random(-0.05, 0.05);
+        let jitterRadius = currentRadius + random(-this.r * 0.02, this.r * 0.02);
+        let px = this.x + cos(jitterAngle) * jitterRadius;
+        let py = this.y + sin(jitterAngle) * jitterRadius;
+        curveVertex(px, py);
+      }
+      
+      endShape();
+    }
+  }
+
+  displayConcentricRings() {
+    let colors = this.getPatternColors();
+    let numRings = 5;
+    let startRadius = this.r * 0.6;
+    let endRadius = this.r * 0.95;
+    let ringSpacing = (endRadius - startRadius) / numRings;
+
+    noFill();
+    strokeWeight(this.r * 0.025);
+
+    for (let i = 0; i < numRings; i++) {
+      stroke(colors[i % 2]);
+      let radius = startRadius + i * ringSpacing;
+      
+      beginShape();
+      let points = 50;
+      for (let j = 0; j <= points; j++) {
+        let angle = (TWO_PI / points) * j;
+        let jitter = random(-radius * 0.03, radius * 0.03);
+        let r = radius + jitter;
+        let px = this.x + cos(angle) * r;
+        let py = this.y + sin(angle) * r;
+        curveVertex(px, py);
+      }
+      endShape(CLOSE);
+    }
+  }
+
+  displayDenseSmallDots() {
+    let colors = this.getPatternColors();
+    let dotSize = this.r * 0.025;
+    let spacing = this.r * 0.08;
+    
+    fill(colors[0]);
+    noStroke();
+
+    for (let radius = this.r/2; radius < this.r; radius += spacing) {
+      let circumference = TWO_PI * radius;
+      let dotCount = floor(circumference / spacing);
+      let angleStep = TWO_PI / dotCount;
+
+      for (let j = 0; j < dotCount; j++) {
+        let angle = j * angleStep;
+        let jitterAngle = angle + random(-0.15, 0.15);
+        let jitterRadius = radius + random(-this.r * 0.03, this.r * 0.03);
+        let px = this.x + cos(jitterAngle) * jitterRadius;
+        let py = this.y + sin(jitterAngle) * jitterRadius;
+        let jitterSize = dotSize * random(0.7, 1.3);
+        ellipse(px, py, jitterSize * 2);
+      }
+    }
+  }
+
+  displaySpiralDots() {
+    let colors = this.getPatternColors();
+    let dotSize = this.r * 0.035;
+    let numDots = 80;
+    let goldenAngle = 137.5;
+    
+    fill(colors[0]);
+    noStroke();
+    
+    for (let i = 0; i < numDots; i++) {
+      let angle = radians(i * goldenAngle);
+      let radius = this.r * 0.9 * sqrt(i / numDots);
+      let jitterAngle = angle + random(-0.15, 0.15);
+      let jitterRadius = radius + random(-this.r * 0.03, this.r * 0.03);
+      let px = this.x + cos(jitterAngle) * jitterRadius;
+      let py = this.y + sin(jitterAngle) * jitterRadius;
+      let jitterSize = dotSize * random(0.7, 1.3);
+      ellipse(px, py, jitterSize * 2);
+    }
+  }
+
+  displayCrossLines() {
+    let colors = this.getPatternColors();
+    let numLines = 16;
+    let radius = this.r * 0.85;
+    
+    strokeWeight(this.r * 0.02);
+    
+    for (let i = 0; i < numLines; i++) {
+      stroke(colors[i % 2]);
+      let angle1 = (TWO_PI / numLines) * i;
+      
+      noFill();
+      beginShape();
+      for (let t = 0; t <= 1; t += 0.15) {
+        let currentRadius = lerp(-radius, radius, t);
+        let jitterAngle = angle1 + random(-0.05, 0.05);
+        let jitterRadius = currentRadius + random(-this.r * 0.03, this.r * 0.03);
+        let px = this.x + cos(jitterAngle) * jitterRadius;
+        let py = this.y + sin(jitterAngle) * jitterRadius;
+        curveVertex(px, py);
+      }
+      endShape();
+    }
+  }
+
+  displayWavyRings() {
+    let colors = this.getPatternColors();
+    let numRings = 6;
+    
+    noFill();
+    strokeWeight(this.r * 0.02);
+    
+    for (let ring = 0; ring < numRings; ring++) {
+      stroke(colors[ring % 2]);
+      let baseRadius = this.r * (0.55 + ring * 0.08);
+      
+      beginShape();
+      let points = 60;
+      for (let i = 0; i <= points; i++) {
+        let angle = (TWO_PI / points) * i;
+        let wave = sin(angle * 6) * this.r * 0.03;
+        let jitter = random(-this.r * 0.015, this.r * 0.015);
+        let radius = baseRadius + wave + jitter;
+        let px = this.x + cos(angle) * radius;
+        let py = this.y + sin(angle) * radius;
+        curveVertex(px, py);
+      }
+      endShape(CLOSE);
+    }
+  }
+
+  displayTriangleDots() {
+    let colors = this.getPatternColors();
+    let size = this.r * 0.08;
+    let spacing = this.r * 0.15;
+    
+    fill(colors[0]);
+    noStroke();
+    
+    for (let radius = this.r * 0.6; radius < this.r; radius += spacing) {
+      let count = floor(TWO_PI * radius / spacing);
+      let angleStep = TWO_PI / count;
+      
+      for (let j = 0; j < count; j++) {
+        let angle = j * angleStep + random(-0.15, 0.15);
+        let jitterRadius = radius + random(-this.r * 0.04, this.r * 0.04);
+        let px = this.x + cos(angle) * jitterRadius;
+        let py = this.y + sin(angle) * jitterRadius;
+        
+        push();
+        translate(px, py);
+        rotate(angle + random(-0.3, 0.3));
+        
+        beginShape();
+        for (let i = 0; i < 3; i++) {
+          let a = (TWO_PI / 3) * i - PI / 2;
+          let jitter = random(-size * 0.15, size * 0.15);
+          let s = size * random(0.8, 1.2);
+          let vx = cos(a) * (s / 2 + jitter);
+          let vy = sin(a) * (s / 2 + jitter);
+          curveVertex(vx, vy);
+        }
+        for (let i = 0; i < 2; i++) {
+          let a = (TWO_PI / 3) * i - PI / 2;
+          let jitter = random(-size * 0.15, size * 0.15);
+          let s = size * random(0.8, 1.2);
+          let vx = cos(a) * (s / 2 + jitter);
+          let vy = sin(a) * (s / 2 + jitter);
+          curveVertex(vx, vy);
+        }
+        endShape(CLOSE);
+        pop();
+      }
+    }
+  }
+
+  displayGridDots() {
+    let colors = this.getPatternColors();
+    let dotSize = this.r * 0.04;
+    let spacing = this.r * 0.12;
+    
+    fill(colors[0]);
+    noStroke();
+    
+    for (let x = -this.r; x <= this.r; x += spacing) {
+      for (let y = -this.r; y <= this.r; y += spacing) {
+        let px = this.x + x + random(-spacing * 0.25, spacing * 0.25);
+        let py = this.y + y + random(-spacing * 0.25, spacing * 0.25);
+        if (dist(this.x, this.y, px, py) < this.r * 0.9) {
+          let jitterSize = dotSize * random(0.6, 1.4);
+          ellipse(px, py, jitterSize * 2);
+        }
+      }
+    }
+  }
+
+  displayDoubleRadial() {
+    let colors = this.getPatternColors();
+    let numLines = 24;
+    let innerRadius = this.r * 0.35;
+    let outerRadius = this.r * 0.9;
+    
+    for (let i = 0; i < numLines; i++) {
+      stroke(colors[i % 2]);
+      strokeWeight(i % 2 === 0 ? this.r * 0.025 : this.r * 0.01);
+      let angle = (TWO_PI / numLines) * i;
+      
+      noFill();
+      beginShape();
+      for (let t = 0; t <= 1; t += 0.15) {
+        let currentRadius = lerp(innerRadius, outerRadius, t);
+        let jitterAngle = angle + random(-0.06, 0.06);
+        let jitterRadius = currentRadius + random(-this.r * 0.03, this.r * 0.03);
+        let px = this.x + cos(jitterAngle) * jitterRadius;
+        let py = this.y + sin(jitterAngle) * jitterRadius;
+        curveVertex(px, py);
+      }
+      endShape();
+    }
+  }
+
+  displayArcLines() {
+    let colors = this.getPatternColors();
+    let numArcs = 12;
+    
+    noFill();
+    strokeWeight(this.r * 0.02);
+    
+    for (let i = 0; i < numArcs; i++) {
+      stroke(colors[i % 2]);
+      let startAngle = (TWO_PI / numArcs) * i;
+      let endAngle = startAngle + PI / 2;
+      
+      beginShape();
+      for (let angle = startAngle; angle <= endAngle; angle += 0.08) {
+        let radius = this.r * 0.75 + random(-this.r * 0.03, this.r * 0.03);
+        let jitterAngle = angle + random(-0.05, 0.05);
+        let px = this.x + cos(jitterAngle) * radius;
+        let py = this.y + sin(jitterAngle) * radius;
+        curveVertex(px, py);
+      }
+      endShape();
+    }
+  }
+
+  displayStarRadial() {
+    let colors = this.getPatternColors();
+    let numPoints = 16;
+    
+    strokeWeight(this.r * 0.02);
+    
+    for (let i = 0; i < numPoints; i++) {
+      stroke(colors[i % 2]);
+      let angle = (TWO_PI / numPoints) * i;
+      let innerR = this.r * 0.3;
+      let outerR = i % 2 === 0 ? this.r * 0.9 : this.r * 0.7;
+      
+      noFill();
+      beginShape();
+      for (let t = 0; t <= 1; t += 0.2) {
+        let currentRadius = lerp(innerR, outerR, t);
+        let jitterAngle = angle + random(-0.06, 0.06);
+        let jitterRadius = currentRadius + random(-this.r * 0.03, this.r * 0.03);
+        let px = this.x + cos(jitterAngle) * jitterRadius;
+        let py = this.y + sin(jitterAngle) * jitterRadius;
+        curveVertex(px, py);
+      }
+      endShape();
+    }
+  }
+
+  displayRingsWithDots() {
+    let colors = this.getPatternColors();
+    
+    noFill();
+    strokeWeight(this.r * 0.02);
+    for (let i = 0; i < 3; i++) {
+      stroke(colors[0]);
+      let radius = this.r * (0.6 + i * 0.12);
+      beginShape();
+      let points = 50;
+      for (let j = 0; j <= points; j++) {
+        let angle = (TWO_PI / points) * j;
+        let jitter = random(-radius * 0.04, radius * 0.04);
+        let r = radius + jitter;
+        let px = this.x + cos(angle) * r;
+        let py = this.y + sin(angle) * r;
+        curveVertex(px, py);
+      }
+      endShape(CLOSE);
+    }
+    
+    fill(colors[1]);
+    noStroke();
+    let dotSize = this.r * 0.03;
+    for (let i = 0; i < 3; i++) {
+      let radius = this.r * (0.65 + i * 0.12);
+      let dotCount = 16;
+      let angleStep = TWO_PI / dotCount;
+      for (let j = 0; j < dotCount; j++) {
+        let angle = j * angleStep + random(-0.15, 0.15);
+        let jitterRadius = radius + random(-this.r * 0.03, this.r * 0.03);
+        let px = this.x + cos(angle) * jitterRadius;
+        let py = this.y + sin(angle) * jitterRadius;
+        let jitterSize = dotSize * random(0.7, 1.3);
+        ellipse(px, py, jitterSize * 2);
+      }
+    }
+  }
+
+  displayHexagons() {
+    let colors = this.getPatternColors();
+    let hexSize = this.r * 0.1;
+    
+    noFill();
+    stroke(colors[0]);
+    strokeWeight(this.r * 0.015);
+    
+    for (let row = -4; row <= 4; row++) {
+      for (let col = -4; col <= 4; col++) {
+        let xOffset = col * hexSize * 1.5;
+        let yOffset = row * hexSize * sqrt(3) + (col % 2) * hexSize * sqrt(3) / 2;
+        let px = this.x + xOffset + random(-hexSize * 0.1, hexSize * 0.1);
+        let py = this.y + yOffset + random(-hexSize * 0.1, hexSize * 0.1);
+        
+        if (dist(this.x, this.y, px, py) < this.r * 0.85) {
+          beginShape();
+          for (let i = 0; i <= 6; i++) {
+            let angle = PI / 3 * i;
+            let jitter = random(-hexSize * 0.08, hexSize * 0.08);
+            let size = hexSize * 0.45 * random(0.9, 1.1);
+            let vx = px + cos(angle) * (size + jitter);
+            let vy = py + sin(angle) * (size + jitter);
+            curveVertex(vx, vy);
+          }
+          endShape(CLOSE);
+        }
+      }
+    }
+  }
+
+  displayMiddlePattern() {
+    switch(this.patternType) {
+      case 0: this.displayDotPattern(); break;
+      case 1: this.displayRadialLines(); break;
+      case 2: this.displayConcentricRings(); break;
+      case 3: this.displayDenseSmallDots(); break;
+      case 4: this.displaySpiralDots(); break;
+      case 5: this.displayCrossLines(); break;
+      case 6: this.displayWavyRings(); break;
+      case 7: this.displayTriangleDots(); break;
+      case 8: this.displayGridDots(); break;
+      case 9: this.displayDoubleRadial(); break;
+      case 10: this.displayArcLines(); break;
+      case 11: this.displayStarRadial(); break;
+      case 12: this.displayRingsWithDots(); break;
+      case 13: this.displayHexagons(); break;
+    }
+  }
+
+  displayInnerDots() {
+    let colors = this.getPatternColors();
+    
+    this.drawHandDrawnCircle(
+      this.x, 
+      this.y, 
+      this.r / 2, 
+      colors[0], 
+      colors[1], 
+      this.r * 0.08
+    );
+
+    noFill();
+    strokeWeight(this.r * 0.03);
+    stroke(colors[0]);
+    this.drawHandDrawnCircle(this.x, this.y, this.r / 2.4, color(0, 0), colors[0], this.r * 0.03);
+    this.drawHandDrawnCircle(this.x, this.y, this.r / 3, color(0, 0), colors[0], this.r * 0.03);
+
+    noStroke();
+    this.drawHandDrawnCircle(this.x, this.y, this.r / 4, color(100), color(0, 0), 0);
+    this.drawHandDrawnCircle(this.x, this.y, this.r / 5, color(0), color(0, 0), 0);
+    this.drawHandDrawnCircle(this.x, this.y, this.r / 6.6, colors[0], color(0, 0), 0);
+    this.drawHandDrawnCircle(this.x, this.y, this.r / 12, colors[1], color(0, 0), 0);
+  }
+
+  static displayLine(count, startX, startY, stepX, stepY, r) {
+    for (let i = 0; i < count; i++) {
+      let x = startX + stepX * i;
+      let y = startY + stepY * i;
+      let c = new Circle(x, y, r);
+      c.display();
+      c.displayMiddlePattern();
+      c.displayInnerDots();
+    }
+  }
+}
+
+function drawConnectionDots() {
+  let dotPositions = [
+    {x: width * 0.15, y: height * 0.3},
+    {x: width * 0.25, y: height * 0.15},
+    {x: width * 0.45, y: height * 0.25},
+    {x: width * 0.65, y: height * 0.15},
+    {x: width * 0.75, y: height * 0.45},
+    {x: width * 0.35, y: height * 0.55},
+    {x: width * 0.15, y: height * 0.75},
+    {x: width * 0.55, y: height * 0.65},
+    {x: width * 0.85, y: height * 0.75}
+  ];
+  
+  for (let pos of dotPositions) {
+    fill(0);
+    noStroke();
+    let outerSize = width * 0.015;
+    beginShape();
+    for (let i = 0; i < 20; i++) {
+      let angle = (TWO_PI / 20) * i;
+      let jitter = random(-outerSize * 0.15, outerSize * 0.15);
+      let r = outerSize / 2 + jitter;
+      let px = pos.x + cos(angle) * r;
+      let py = pos.y + sin(angle) * r;
+      curveVertex(px, py);
+    }
+    endShape(CLOSE);
+    
+    fill(255);
+    let innerSize = width * 0.008;
+    beginShape();
+    for (let i = 0; i < 20; i++) {
+      let angle = (TWO_PI / 20) * i;
+      let jitter = random(-innerSize * 0.15, innerSize * 0.15);
+      let r = innerSize / 2 + jitter;
+      let px = pos.x + cos(angle) * r;
+      let py = pos.y + sin(angle) * r;
+      curveVertex(px, py);
+    }
+    endShape(CLOSE);
+  }
+}
+
+function addPaperTexture() {
+  loadPixels();
+  for (let i = 0; i < pixels.length; i += 4) {
+    let noise = random(-20, 20);
+    pixels[i] += noise;
+    pixels[i + 1] += noise;
+    pixels[i + 2] += noise;
+  }
+  updatePixels();
+  
+  noStroke();
+  for (let i = 0; i < width * height / 500; i++) {
+    let x = random(width);
+    let y = random(height);
+    let size = random(1, 3);
+    fill(random(100, 150), random(30, 80));
+    ellipse(x, y, size);
+  }
+}
+
+let bgColor;
 
 function setup() {
   let size = min(windowWidth, windowHeight);
   createCanvas(size, size);
   
-  // Initialize color schemes
-  colors = {
-    background: color(42, 107, 111),
-    
-    nightIndigo: color(30, 40, 80),
-    desertRed: color(207, 60, 45),
-    fireOrange: color(245, 140, 40),
-    sandYellow: color(238, 200, 70),
-    jungleGreen: color(76, 165, 60),
-    coralPink: color(236, 100, 150),
-    royalPurple: color(155, 80, 180),
-    oceanBlue: color(70, 130, 210),
-    whiteClay: color(250, 245, 230),
-    
-    schemes: [
-      {
-        outer: color(245, 140, 40),
-        dots: color(207, 60, 45),
-        rings: [color(207, 60, 45), color(76, 165, 60), color(70, 130, 210)]
-      },
-      {
-        outer: color(236, 100, 150),
-        dots: color(238, 200, 70),
-        rings: [color(155, 80, 180), color(70, 130, 210), color(76, 165, 60)]
-      },
-      {
-        outer: color(238, 200, 70),
-        dots: color(245, 140, 40),
-        rings: [color(207, 60, 45), color(236, 100, 150), color(76, 165, 60)]
-      },
-      {
-        outer: color(76, 165, 60),
-        dots: color(236, 100, 150),
-        rings: [color(155, 80, 180), color(207, 60, 45), color(76, 165, 60)]
-      },
-      {
-        outer: color(155, 80, 180),
-        dots: color(238, 200, 70),
-        rings: [color(70, 130, 210), color(207, 60, 45), color(76, 165, 60)]
-      },
-      {
-        outer: color(207, 60, 45),
-        dots: color(238, 200, 70),
-        rings: [color(236, 100, 150), color(76, 165, 60), color(70, 130, 210)]
-      },
-    ],
-    
-    connector: color(245, 140, 40),
-    black: color(26, 26, 26),
-    white: color(250, 245, 230)
-  };
+  // 随机选择浅色背景
+  const lightBackgrounds = [
+    [175, 210, 180],  // 浅薄荷绿
+    [180, 200, 210],  // 浅天空蓝
+    [190, 165, 145],  // 浅土红色
+    [210, 195, 165],  // 米黄色
+    [165, 155, 185],  // 浅薰衣草紫
+    [180, 195, 175],  // 浅橄榄绿
+    [185, 180, 200],  // 浅灰紫色
+    [200, 180, 170]   // 浅杏色
+  ];
   
-  noLoop();
+  bgColor = random(lightBackgrounds);
 }
 
 function draw() {
-  background(colors.background);
-  
+  background(bgColor[0], bgColor[1], bgColor[2]);
+
   let r = width / 8;
-  
-  // Line 1: Diagonal (5 circles)
-  drawCircleLine(5, width / 7.1, height / 7.1, width / 4.8, height / 4.8, r, 
-                 [0, 1, 2, 3, 4], ['dots', 'radial', 'dots', 'mixed', 'radial']);
-  
-  // Line 2: (4 circles)
-  drawCircleLine(4, width / 2, height * 2 / 20, width / 4.8, height / 4.8, r,
-                 [1, 2, 3, 0], ['radial', 'dots', 'mixed', 'dots']);
-  
-  // Line 3: (2 circles)
-  drawCircleLine(2, width * 4 / 5, 0, width / 4.8, height / 4.8, r,
-                 [4, 5], ['dots', 'mixed']);
-  
-  // Line 4: (4 circles)
-  drawCircleLine(4, width / 20, height / 2.2, width / 4.8, height / 4.8, r,
-                 [3, 0, 5, 1], ['mixed', 'dots', 'radial', 'dots']);
-  
-  // Line 5: (2 circles)
-  drawCircleLine(2, 0, height * 8 / 10, width / 4.8, height / 4.8, r,
-                 [2, 4], ['mixed', 'radial']);
-  
-  if (showGrid) {
-    drawGrid();
-  }
-}
 
-function drawCircleLine(count, startX, startY, stepX, stepY, r, colorIndices, patterns) {
-  for (let i = 0; i < count; i++) {
-    let x = startX + stepX * i;
-    let y = startY + stepY * i;
-    let colorScheme = colors.schemes[colorIndices[i] % colors.schemes.length];
-    let pattern = patterns[i];
-    
-    drawCircle(x, y, r, colorScheme, pattern);
-  }
-}
-
-function drawCircle(x, y, radius, colorScheme, patternType) {
-  push();
-  drawOuterPattern(x, y, radius, colorScheme, patternType);
-  drawMiddleLayer(x, y, radius, colorScheme);
-  drawInnerTriplet(x, y, radius, colorScheme);
-  drawConcentricRings(x, y, radius, colorScheme);
-  drawCenter(x, y, radius, colorScheme);
-  pop();
-}
-
-function drawMiddleLayer(x, y, radius, colorScheme) {
-  noStroke();
-  let middleCol = (colorScheme.rings && colorScheme.rings[1]) ? colorScheme.rings[1] : colors.whiteClay;
-  fill(middleCol);
-  let middleR = radius * 0.78; // sits between outer circle and inner triplet
-  ellipse(x, y, middleR * 2, middleR * 2);
-}
-
-function drawInnerTriplet(x, y, radius, colorScheme) {
-  noStroke();
-  let orbitR = radius * 0.55; // orbit on which 3 small circles sit
-  let smallR = radius * 0.18;
-  for (let i = 0; i < 3; i++) {
-    let angle = i * (TWO_PI / 3) + 0.2; // 120° apart with slight offset for organic feel
-    let px = x + cos(angle) * orbitR;
-    let py = y + sin(angle) * orbitR;
-    let col = (colorScheme.rings && colorScheme.rings.length)
-      ? colorScheme.rings[i % colorScheme.rings.length]
-      : colorScheme.dots;
-    fill(col);
-    ellipse(px, py, smallR * 2, smallR * 2);
-  }
-}
-
-function drawOuterPattern(x, y, radius, colorScheme, patternType) {
-  noStroke();
-  fill(colorScheme.outer);
-  ellipse(x, y, radius * 2, radius * 2);
+  Circle.displayLine(5, width / 7.1, height / 7.1, width / 4.8, height / 4.8, r);
+  Circle.displayLine(4, width / 2, height * 2 / 20, width / 4.8, height / 4.8, r);
+  Circle.displayLine(2, width * 4 / 5, 0, width / 4.8, height / 4.8, r);
+  Circle.displayLine(4, width / 20, height / 2.2, width / 4.8, height / 4.8, r);
+  Circle.displayLine(2, 0, height * 8 / 10, width / 4.8, height / 4.8, r);
   
-  if (patternType === 'dots') {
-    drawDotPattern(x, y, radius, colorScheme);
-  } else if (patternType === 'radial') {
-    drawRadialPattern(x, y, radius, colorScheme);
-  } else if (patternType === 'mixed') {
-    drawMixedPattern(x, y, radius, colorScheme);
-  }
-}
-
-function drawDotPattern(x, y, radius, colorScheme) {
-  let dotSize = 3;
-  let spacing = 8;
+  drawConnectionDots();
   
-  fill(colorScheme.dots);
-  noStroke();
+  addPaperTexture();
   
-  for (let r = spacing; r < radius; r += spacing) {
-    let circumference = TWO_PI * r;
-    let numDots = floor(circumference / spacing);
-    
-    for (let i = 0; i < numDots; i++) {
-      let angle = (i / numDots) * TWO_PI;
-      let px = x + cos(angle) * r;
-      let py = y + sin(angle) * r;
-      ellipse(px, py, dotSize * 2, dotSize * 2);
-    }
-  }
-}
-
-function drawRadialPattern(x, y, radius, colorScheme) {
-  let numLines = 60;
-  stroke(colorScheme.dots);
-  strokeWeight(2);
-  
-  for (let i = 0; i < numLines; i++) {
-    let angle = (i / numLines) * TWO_PI;
-    let startR = radius * 0.3;
-    let endR = radius;
-    
-    line(
-      x + cos(angle) * startR,
-      y + sin(angle) * startR,
-      x + cos(angle) * endR,
-      y + sin(angle) * endR
-    );
-  }
-}
-
-function drawMixedPattern(x, y, radius, colorScheme) {
-  let dotSize = 4;
-  let spacing = 10;
-  
-  fill(colorScheme.dots);
-  noStroke();
-  
-  for (let r = spacing; r < radius * 0.7; r += spacing) {
-    let circumference = TWO_PI * r;
-    let numDots = floor(circumference / spacing);
-    
-    for (let i = 0; i < numDots; i++) {
-      let angle = (i / numDots) * TWO_PI;
-      let px = x + cos(angle) * r;
-      let py = y + sin(angle) * r;
-      ellipse(px, py, dotSize * 2, dotSize * 2);
-    }
-  }
-}
-
-function drawConcentricRings(x, y, radius, colorScheme) {
-  let ringCount = 3;
-  let baseRingRadius = radius * 0.28;
-  let ringWidth = baseRingRadius / (ringCount + 1);
-  
-  noFill();
-  
-  for (let i = 0; i < ringCount; i++) {
-    let r = baseRingRadius - (i * ringWidth);
-    stroke(colorScheme.rings[i % colorScheme.rings.length]);
-    strokeWeight(ringWidth * 0.7);
-    ellipse(x, y, r * 2, r * 2);
-  }
-}
-
-function drawCenter(x, y, radius, colorScheme) {
-  noStroke();
-  fill(colors.black);
-  ellipse(x, y, radius * 0.16, radius * 0.16);
-  fill(colorScheme.rings[0]);
-  ellipse(x, y, radius * 0.08, radius * 0.08);
-}
-
-function drawGrid() {
-  let gridSize = 6;
-  let cellW = width / gridSize;
-  let cellH = height / gridSize;
-  
-  push();
-  
-  stroke(255, 255, 0, 150);
-  strokeWeight(1);
-  
-  for (let i = 0; i <= gridSize; i++) {
-    line(i * cellW, 0, i * cellW, height);
-    line(0, i * cellH, width, i * cellH);
-  }
-  
-  fill(255, 255, 0);
-  noStroke();
-  textSize(11);
-  textAlign(LEFT, TOP);
-  
-  for (let col = 0; col < gridSize; col++) {
-    for (let row = 0; row < gridSize; row++) {
-      text(`[${col},${row}]`, col * cellW + 3, row * cellH + 3);
-    }
-  }
-  
-  fill(255, 0, 0);
-  for (let col = 0; col < gridSize; col++) {
-    for (let row = 0; row < gridSize; row++) {
-      let centerX = cellW * (col + 0.5);
-      let centerY = cellH * (row + 0.5);
-      ellipse(centerX, centerY, 5, 5);
-    }
-  }
-  
-  fill(255, 255, 255, 220);
-  rect(10, height - 100, 160, 90, 5);
-  
-  fill(0);
-  textAlign(LEFT, TOP);
-  textSize(12);
-  text('📐 Grid System ON', 15, height - 95);
-  text(`Grid: ${gridSize}×${gridSize}`, 15, height - 75);
-  text('Total circles: 17', 15, height - 55);
-  text('Press G to toggle', 15, height - 35);
-  text('Click for coords', 15, height - 15);
-  
-  pop();
-}
-
-function keyPressed() {
-  if (key === 'g' || key === 'G') {
-    showGrid = !showGrid;
-    redraw();
-  }
-  
-  if (key === 'h' || key === 'H') {
-    console.log('=== Aboriginal Art - Help ===');
-    console.log('');
-    console.log('Keyboard Shortcuts:');
-    console.log('  G - Toggle grid display');
-    console.log('  H - Show this help');
-    console.log('  Click - Show coordinates');
-    console.log('');
-    console.log('Circle Parameters:');
-    console.log('  Base radius: width / 8');
-    console.log('  Diagonal step: width / 4.8');
-    console.log('  Total circles: 17 (5+4+2+4+2)');
-    console.log('');
-    console.log('Line Configuration:');
-    console.log('  Line 1: 5 circles (main diagonal)');
-    console.log('  Line 2: 4 circles');
-    console.log('  Line 3: 2 circles (right edge)');
-    console.log('  Line 4: 4 circles');
-    console.log('  Line 5: 2 circles (bottom edge)');
-  }
-}
-
-function mousePressed() {
-  let gridSize = 6;
-  let cellW = width / gridSize;
-  let cellH = height / gridSize;
-  
-  let gridCol = floor(mouseX / cellW);
-  let gridRow = floor(mouseY / cellH);
-  
-  console.log('=== Click Info ===');
-  console.log(`Mouse Position: (${mouseX.toFixed(1)}, ${mouseY.toFixed(1)})`);
-  console.log(`Grid Cell: [${gridCol}, ${gridRow}]`);
-  console.log(`Cell Center: (${(cellW * (gridCol + 0.5)).toFixed(1)}, ${(cellH * (gridRow + 0.5)).toFixed(1)})`);
-  console.log(`Relative: (width/${(width/mouseX).toFixed(2)}, height/${(height/mouseY).toFixed(2)})`);
+  noLoop();
 }
 
 function windowResized() {
