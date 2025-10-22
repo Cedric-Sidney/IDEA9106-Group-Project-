@@ -5,14 +5,14 @@ class Circle {
     this.r = r;
   }
 
-  // 画单个圆
+  // Draw a single circle
   display() {
     stroke(0);
     noFill();
     ellipse(this.x, this.y, this.r * 2);
   }
 
-  // 在一条线上画多个圆
+  // Draw multiple circles along a line
   static displayLine(count, startX, startY, stepX, stepY, r) {
     for (let i = 0; i < count; i++) {
       let x = startX + stepX * i;
@@ -25,15 +25,15 @@ class Circle {
 
 function setup() {
   let size = min(windowWidth, windowHeight);
-  createCanvas(size,size); // 初始画布大小
+  createCanvas(size,size); // Initial canvas size
 }
 
 function draw() {
   background(220);
 
-  let r = width / 8; // 半径随画布宽度变化
+  let r = width / 8; // Radius adjusts based on canvas width
 
-  // 在对角线上画 5 个圆
+  // Draw 5 circles along the diagona
   Circle.displayLine(
     5,
     width / 7.1,
@@ -80,7 +80,7 @@ function draw() {
   );
 }
 
-// 当窗口大小变化时自动调整画布
+// Automatically adjust canvas size when window is resized
 function windowResized() {
   let size = min(windowWidth, windowHeight);
   resizeCanvas(size, size);
