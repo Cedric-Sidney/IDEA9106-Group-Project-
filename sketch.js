@@ -32,6 +32,7 @@ function draw() {
   background(220);
 
   let r = width / 8; // Radius adjusts based on canvas width
+  let  
 
   // Draw 5 circles along the diagona
   Circle.displayLine(
@@ -97,3 +98,16 @@ colors = {
   oceanBlue: color(70, 130, 210),      // deep sky blue
   whiteClay: color(250, 245, 230),     // light clay white for dots
 };
+
+class innerCircle{
+    constructor(startX, startY, stepX, stepY, count, mainR, smallR) {
+    this.startX = startX;
+    this.startY = startY;
+    this.stepX = stepX;
+    this.stepY = stepY;
+    this.count = count;
+    this.mainR = mainR;
+    this.smallR = smallR;
+  }
+}
+
