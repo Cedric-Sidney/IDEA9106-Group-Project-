@@ -104,9 +104,35 @@ function drawCircleLine(count, startX, startY, stepX, stepY, r, colorIndices, pa
 function drawCircle(x, y, radius, colorScheme, patternType) {
   push();
   drawOuterPattern(x, y, radius, colorScheme, patternType);
+  drawMiddleLayer(x, y, radius, colorScheme);
+  drawInnerTriplet(x, y, radius, colorScheme);
   drawConcentricRings(x, y, radius, colorScheme);
   drawCenter(x, y, radius, colorScheme);
   pop();
+}
+
+function drawMiddleLayer(x, y, radius, colorScheme) {
+  noStroke();
+  let middleCol = (colorScheme.rings && colorScheme.rings[1]) ? colorScheme.rings[1] : colors.whiteClay;
+  fill(middleCol);
+  let middleR = radius * 0.78; // sits between outer circle and inner triplet
+  ellipse(x, y, middleR * 2, middleR * 2);
+}
+
+function drawInnerTriplet(x, y, radius, colorScheme) {
+  noStroke();
+  let orbitR = radius * 0.55; // orbit on which 3 small circles sit
+  let smallR = radius * 0.18;
+  for (let i = 0; i < 3; i++) {
+    let angle = i * (TWO_PI / 3) + 0.2; // 120° apart with slight offset for organic feel
+    let px = x + cos(angle) * orbitR;
+    let py = y + sin(angle) * orbitR;
+    let col = (colorScheme.rings && colorScheme.rings.length)
+      ? colorScheme.rings[i % colorScheme.rings.length]
+      : colorScheme.dots;
+    fill(col);
+    ellipse(px, py, smallR * 2, smallR * 2);
+  }
 }
 
 function drawOuterPattern(x, y, radius, colorScheme, patternType) {
