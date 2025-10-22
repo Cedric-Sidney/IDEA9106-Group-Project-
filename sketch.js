@@ -22,8 +22,15 @@ let songlines = [];
 // =============================================================================
 // SETUP - Initialize the canvas and artwork
 // =============================================================================
+
+
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  let size = Math.min(windowWidth, windowHeight);
+  createCanvas(size,size);
+
+function draw() {
+  background(220);
+}
   
   // Initialize traditional Aboriginal color palette
   // Based on natural earth pigments used in traditional art
