@@ -85,3 +85,15 @@ function windowResized() {
   let size = min(windowWidth, windowHeight);
   resizeCanvas(size, size);
 }
+
+colors = {
+  nightIndigo: color(30, 40, 80),      // dark indigo background
+  desertRed: color(207, 60, 45),       // deep earthy red
+  fireOrange: color(245, 140, 40),     // vibrant orange, warm contrast
+  sandYellow: color(238, 200, 70),     // sandy yellow for connectors
+  jungleGreen: color(76, 165, 60),     // bright leaf green
+  coralPink: color(236, 100, 150),     // coral pink accent
+  royalPurple: color(155, 80, 180),    // saturated purple
+  oceanBlue: color(70, 130, 210),      // deep sky blue
+  whiteClay: color(250, 245, 230),     // light clay white for dots
+};
