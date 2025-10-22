@@ -1,108 +1,46 @@
-/* =============================================================================
-   Aboriginal Art - Styles
-   ============================================================================= */
-
-/* Reset default margins and padding */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Body styling */
-html, body {
-  /* Set margin and padding to 0 to remove default browser spacing, ensuring the canvas can use the full window size */
-  margin: 0;
-  padding: 0;
-  /* Use flexbox display to facilitate centre alignment of content both horizontally and vertically */
-  display: flex;
-  /* Align items vertically to the centre of the container */
-  align-items: center;
-  /* Centre content horizontally within the body */
-  justify-content: center; 
-  /* Set the colour to black to match the canvas */
-  background-color: black;
-}
-
-/* Canvas styling (p5.js automatically creates the canvas) */
-canvas {
-  display: block; /* Remove default inline spacing */
-  width: 100vw;
-  height: 100vh;
-}
-
-/* Optional: Add a title overlay (remove if not needed) */
-.title-overlay {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  color: #f5f5dc;
-  font-size: 24px;
-  font-weight: 300;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-  pointer-events: none; /* Don't block canvas interactions */
-  z-index: 10;
-}
-
-/* Optional: Instructions overlay */
-.instructions {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #f5f5dc;
-  font-size: 14px;
-  text-align: center;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
-  pointer-events: none;
-  z-index: 10;
-  opacity: 0.7;
-}
-
-/* Loading screen (optional) */
-.loading {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #1a1612;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #f5f5dc;
-  font-size: 18px;
-  z-index: 100;
-}
-
-/* Hide loading when p5.js is ready */
-.loading.hidden {
-  display: none;
-}
-
-/* Responsive design for mobile */
-@media (max-width: 768px) {
-  .title-overlay {
-    font-size: 18px;
-    top: 10px;
-    left: 10px;
-  }
-  
-  .instructions {
-    font-size: 12px;
-    bottom: 10px;
-  }
-}
-
-/* Print styles */
-@media print {
-  body {
-    overflow: visible;
-  }
-  
-  .title-overlay,
-  .instructions {
-    display: none;
-  }
-}
-
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: 'Arial', sans-serif;
+    }
+    canvas {
+      display: block;
+    }
+    .controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      font-size: 13px;
+      max-width: 220px;
+    }
+    .controls h3 {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+      color: #2a6b6f;
+      border-bottom: 2px solid #2a6b6f;
+      padding-bottom: 5px;
+    }
+    .controls p {
+      margin: 5px 0;
+      line-height: 1.4;
+    }
+    .controls strong {
+      color: #333;
+    }
+    .controls .key {
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: monospace;
+      font-weight: bold;
+      color: #2a6b6f;
+    }
+    .controls .divider {
+      border-top: 1px solid #ddd;
+      margin: 10px 0;
+    }

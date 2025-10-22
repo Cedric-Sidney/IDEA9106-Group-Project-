@@ -1,426 +1,305 @@
- 
-// =============================================================================
-// Aboriginal Art - Group Base Code
-// =============================================================================
-// This sketch is inspired by Australian Aboriginal dot painting traditions
-// and songline (Dreaming Path) art. It represents waterholes, meeting places,
-// and the paths connecting them across the landscape.
-//
-// Cultural Elements:
-// - Concentric circles: waterholes, campsites, or sacred meeting places
-// - U-shapes: people sitting in ceremony or gathering
-// - Lines with dots: songlines (ancestral paths across the land)
-// - Dot patterns: landscape, story details, or sacred designs
-// - Earth-tone palette: ochre, red earth, charcoal, white clay
-// =============================================================================
-
-// Global variables
 let colors;
-let waterholes = [];
-let songlines = [];
-
-// =============================================================================
-// SETUP - Initialize the canvas and artwork
-// =============================================================================
-
+let showGrid = false;
 
 function setup() {
-  let size = Math.min(windowWidth, windowHeight);
-  createCanvas(size,size);
-
-function draw() {
-  background(220);
-}
+  let size = min(windowWidth, windowHeight);
+  createCanvas(size, size);
   
-  // Initialize traditional Aboriginal color palette
-  // Based on natural earth pigments used in traditional art
+  // Initialize color schemes
   colors = {
-    background: color(26, 22, 18),      // Dark earth/charcoal
-    ochre: color(212, 165, 116),        // Yellow ochre
-    redEarth: color(139, 58, 58),       // Red earth/oxide
-    whiteGum: color(245, 245, 220),     // White clay/gum
-    charcoal: color(45, 45, 45),        // Charcoal black
-    yellowOchre: color(230, 184, 92),   // Bright yellow ochre
+    background: color(42, 107, 111),
     
-    // Color schemes for different waterholes/sites
-    waterholes: [
-      { 
-        outer: color(139, 58, 58), 
-        middle: color(212, 165, 116), 
-        inner: color(45, 45, 45), 
-        energy: color(230, 184, 92) 
+    nightIndigo: color(30, 40, 80),
+    desertRed: color(207, 60, 45),
+    fireOrange: color(245, 140, 40),
+    sandYellow: color(238, 200, 70),
+    jungleGreen: color(76, 165, 60),
+    coralPink: color(236, 100, 150),
+    royalPurple: color(155, 80, 180),
+    oceanBlue: color(70, 130, 210),
+    whiteClay: color(250, 245, 230),
+    
+    schemes: [
+      {
+        outer: color(245, 140, 40),
+        dots: color(207, 60, 45),
+        rings: [color(207, 60, 45), color(76, 165, 60), color(70, 130, 210)]
       },
-      { 
-        outer: color(212, 165, 116), 
-        middle: color(139, 58, 58), 
-        inner: color(45, 45, 45), 
-        energy: color(245, 245, 220) 
+      {
+        outer: color(236, 100, 150),
+        dots: color(238, 200, 70),
+        rings: [color(155, 80, 180), color(70, 130, 210), color(76, 165, 60)]
       },
-      { 
-        outer: color(230, 184, 92), 
-        middle: color(139, 58, 58), 
-        inner: color(45, 45, 45), 
-        energy: color(212, 165, 116) 
+      {
+        outer: color(238, 200, 70),
+        dots: color(245, 140, 40),
+        rings: [color(207, 60, 45), color(236, 100, 150), color(76, 165, 60)]
       },
-      { 
-        outer: color(139, 58, 58), 
-        middle: color(230, 184, 92), 
-        inner: color(45, 45, 45), 
-        energy: color(245, 245, 220) 
+      {
+        outer: color(76, 165, 60),
+        dots: color(236, 100, 150),
+        rings: [color(155, 80, 180), color(207, 60, 45), color(76, 165, 60)]
       },
-    ]
+      {
+        outer: color(155, 80, 180),
+        dots: color(238, 200, 70),
+        rings: [color(70, 130, 210), color(207, 60, 45), color(76, 165, 60)]
+      },
+      {
+        outer: color(207, 60, 45),
+        dots: color(238, 200, 70),
+        rings: [color(236, 100, 150), color(76, 165, 60), color(70, 130, 210)]
+      },
+    ],
+    
+    connector: color(245, 140, 40),
+    black: color(26, 26, 26),
+    white: color(250, 245, 230)
   };
   
-  // Create the artwork elements
-  initializeArtwork();
-  
-  // Static image for group base code (remove noLoop() for animation)
   noLoop();
 }
 
-// =============================================================================
-// DRAW - Main drawing loop
-// =============================================================================
 function draw() {
-  // Draw dark earth background
   background(colors.background);
   
-  // Add subtle textured background (traditional dotting)
-  drawDottedBackground();
+  let r = width / 8;
   
-  // Draw songlines first (background layer - the paths)
-  for (let line of songlines) {
-    line.draw();
-  }
+  // Line 1: Diagonal (5 circles)
+  drawCircleLine(5, width / 7.1, height / 7.1, width / 4.8, height / 4.8, r, 
+                 [0, 1, 2, 3, 4], ['dots', 'radial', 'dots', 'mixed', 'radial']);
   
-  // Draw waterholes on top (foreground - the destinations)
-  for (let waterhole of waterholes) {
-    waterhole.draw();
+  // Line 2: (4 circles)
+  drawCircleLine(4, width / 2, height * 2 / 20, width / 4.8, height / 4.8, r,
+                 [1, 2, 3, 0], ['radial', 'dots', 'mixed', 'dots']);
+  
+  // Line 3: (2 circles)
+  drawCircleLine(2, width * 4 / 5, 0, width / 4.8, height / 4.8, r,
+                 [4, 5], ['dots', 'mixed']);
+  
+  // Line 4: (4 circles)
+  drawCircleLine(4, width / 20, height / 2.2, width / 4.8, height / 4.8, r,
+                 [3, 0, 5, 1], ['mixed', 'dots', 'radial', 'dots']);
+  
+  // Line 5: (2 circles)
+  drawCircleLine(2, 0, height * 8 / 10, width / 4.8, height / 4.8, r,
+                 [2, 4], ['mixed', 'radial']);
+  
+  if (showGrid) {
+    drawGrid();
   }
 }
 
-// =============================================================================
-// INITIALIZE ARTWORK - Create waterholes and songlines
-// =============================================================================
-function initializeArtwork() {
-  // Calculate base radius for waterholes based on canvas size
-  let baseRadius = min(width, height) * 0.08;
-  
-  // Create waterholes (meeting places, water sources, sacred sites)
-  // In Aboriginal art, concentric circles represent important places
-  waterholes = [
-    new Waterhole(width * 0.25, height * 0.2, baseRadius * 1.2, colors.waterholes[0], 'sacred'),
-    new Waterhole(width * 0.65, height * 0.25, baseRadius, colors.waterholes[1], 'meeting'),
-    new Waterhole(width * 0.85, height * 0.45, baseRadius * 0.9, colors.waterholes[2], 'journey'),
-    new Waterhole(width * 0.4, height * 0.5, baseRadius * 1.1, colors.waterholes[3], 'sacred'),
-    new Waterhole(width * 0.75, height * 0.65, baseRadius, colors.waterholes[0], 'meeting'),
-    new Waterhole(width * 0.2, height * 0.7, baseRadius * 0.95, colors.waterholes[1], 'journey'),
-    new Waterhole(width * 0.55, height * 0.8, baseRadius * 1.05, colors.waterholes[2], 'sacred'),
-    new Waterhole(width * 0.15, height * 0.4, baseRadius * 0.85, colors.waterholes[3], 'meeting'),
-  ];
-  
-  // Create songlines (paths connecting important sites)
-  // Songlines are ancestral paths that cross the land, connecting places
-  songlines = [
-    new Songline([
-      createVector(waterholes[0].x, waterholes[0].y),
-      createVector(waterholes[1].x, waterholes[1].y),
-      createVector(waterholes[2].x, waterholes[2].y)
-    ], colors.ochre),
-    new Songline([
-      createVector(waterholes[3].x, waterholes[3].y),
-      createVector(waterholes[4].x, waterholes[4].y),
-      createVector(waterholes[5].x, waterholes[5].y)
-    ], colors.redEarth),
-    new Songline([
-      createVector(waterholes[7].x, waterholes[7].y),
-      createVector(waterholes[3].x, waterholes[3].y),
-      createVector(waterholes[6].x, waterholes[6].y)
-    ], colors.yellowOchre),
-  ];
-}
-
-// =============================================================================
-// WATERHOLE CLASS
-// =============================================================================
-// Represents a waterhole, campsite, or sacred meeting place
-// Drawn using traditional concentric circle technique
-class Waterhole {
-  constructor(x, y, radius, colorScheme, significance) {
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.colorScheme = colorScheme;
-    this.significance = significance; // 'sacred', 'meeting', 'journey'
-  }
-
-  // Main draw method
-  draw() {
-    // Draw the concentric circles (the site marker)
-    this.drawConcentricCircles();
+function drawCircleLine(count, startX, startY, stepX, stepY, r, colorIndices, patterns) {
+  for (let i = 0; i < count; i++) {
+    let x = startX + stepX * i;
+    let y = startY + stepY * i;
+    let colorScheme = colors.schemes[colorIndices[i] % colors.schemes.length];
+    let pattern = patterns[i];
     
-    // Draw surrounding pattern based on site significance
-    if (this.significance === 'sacred') {
-      this.drawSacredDots();
-    } else if (this.significance === 'meeting') {
-      this.drawMeetingPattern();
-    } else if (this.significance === 'journey') {
-      this.drawJourneyLines();
-    } else {
-      this.drawWaterholeRipples();
-    }
-  }
-
-  // Draw traditional concentric circles
-  drawConcentricCircles() {
-    let rings = 6;
-    let ringWidth = this.radius / rings;
-    
-    noStroke();
-    
-    // Draw outer ring
-    fill(this.colorScheme.outer);
-    ellipse(this.x, this.y, this.radius * 2, this.radius * 2);
-    
-    // Draw alternating colored rings
-    for (let i = 1; i < rings; i++) {
-      let r = this.radius - (ringWidth * i);
-      fill(i % 2 === 0 ? this.colorScheme.middle : this.colorScheme.outer);
-      ellipse(this.x, this.y, r * 2, r * 2);
-    }
-    
-    // Draw center (the actual water source or fire)
-    fill(this.colorScheme.inner);
-    ellipse(this.x, this.y, ringWidth * 3, ringWidth * 3);
-    
-    // Draw inner energy center
-    fill(this.colorScheme.energy);
-    ellipse(this.x, this.y, ringWidth * 1.4, ringWidth * 1.4);
-  }
-
-  // Sacred site pattern - dense dotting technique
-  drawSacredDots() {
-    let dotSize = 2.5;
-    let rings = 8;
-    let spacing = 6;
-    
-    fill(this.colorScheme.energy);
-    noStroke();
-    
-    // Draw concentric rings of dots
-    for (let ring = 1; ring <= rings; ring++) {
-      let r = this.radius + (ring * spacing);
-      let circumference = TWO_PI * r;
-      let numDots = floor(circumference / spacing);
-      
-      for (let i = 0; i < numDots; i++) {
-        let angle = (i / numDots) * TWO_PI;
-        let x = this.x + cos(angle) * r;
-        let y = this.y + sin(angle) * r;
-        
-        ellipse(x, y, dotSize * 2, dotSize * 2);
-      }
-    }
-  }
-
-  // Meeting place pattern - U shapes representing people sitting
-  drawMeetingPattern() {
-    let numPeople = 8;
-    let distance = this.radius + 15;
-    
-    stroke(this.colorScheme.energy);
-    fill(this.colorScheme.energy);
-    strokeWeight(3);
-    noFill();
-    
-    // Draw people sitting in a circle
-    for (let i = 0; i < numPeople; i++) {
-      let angle = (i / numPeople) * TWO_PI;
-      let x = this.x + cos(angle) * distance;
-      let y = this.y + sin(angle) * distance;
-      
-      push();
-      translate(x, y);
-      rotate(angle + PI / 2);
-      
-      // Draw U-shape (traditional symbol for person sitting)
-      arc(0, 0, 16, 16, 0, PI);
-      
-      // Draw dot for head
-      fill(this.colorScheme.energy);
-      noStroke();
-      ellipse(0, -8, 5, 5);
-      
-      pop();
-    }
-  }
-
-  // Journey lines - radiating paths from this place
-  drawJourneyLines() {
-    let numLines = 12;
-    stroke(this.colorScheme.energy);
-    strokeWeight(2);
-    
-    // Draw radiating lines
-    for (let i = 0; i < numLines; i++) {
-      let angle = (i / numLines) * TWO_PI;
-      let startR = this.radius + 5;
-      let endR = this.radius + 25;
-      
-      // Draw line
-      line(
-        this.x + cos(angle) * startR,
-        this.y + sin(angle) * startR,
-        this.x + cos(angle) * endR,
-        this.y + sin(angle) * endR
-      );
-      
-      // Draw dots along the path (footprints/journey markers)
-      noStroke();
-      fill(this.colorScheme.energy);
-      for (let d = 0; d <= 3; d++) {
-        let r = startR + (endR - startR) * (d / 3);
-        ellipse(
-          this.x + cos(angle) * r,
-          this.y + sin(angle) * r,
-          4, 4
-        );
-      }
-    }
-  }
-
-  // Waterhole ripples - representing water flowing outward
-  drawWaterholeRipples() {
-    let dotSize = 3;
-    let numRings = 5;
-    let spacing = 10;
-    
-    fill(this.colorScheme.middle);
-    noStroke();
-    
-    // Draw ripple pattern with dots
-    for (let ring = 1; ring <= numRings; ring++) {
-      let r = this.radius + (ring * spacing);
-      let circumference = TWO_PI * r;
-      let numDots = floor(circumference / (spacing * 0.8));
-      
-      for (let i = 0; i < numDots; i++) {
-        let angle = (i / numDots) * TWO_PI;
-        let x = this.x + cos(angle) * r;
-        let y = this.y + sin(angle) * r;
-        
-        // Dots get smaller as ripples expand
-        let size = dotSize * (1 - ring * 0.1);
-        ellipse(x, y, size * 2, size * 2);
-      }
-    }
+    drawCircle(x, y, r, colorScheme, pattern);
   }
 }
 
-// =============================================================================
-// SONGLINE CLASS
-// =============================================================================
-// Represents a songline (Dreaming Path) connecting important sites
-// These are ancestral paths that cross the landscape
-class Songline {
-  constructor(points, col) {
-    this.points = points; // Array of p5.Vector positions
-    this.col = col;       // Color of this songline
-  }
+function drawCircle(x, y, radius, colorScheme, patternType) {
+  push();
+  drawOuterPattern(x, y, radius, colorScheme, patternType);
+  drawConcentricRings(x, y, radius, colorScheme);
+  drawCenter(x, y, radius, colorScheme);
+  pop();
+}
 
-  // Draw the songline path
-  draw() {
-    if (this.points.length < 2) return;
-    
-    // Draw the connecting path
-    stroke(this.col);
-    strokeWeight(4);
-    noFill();
-    
-    beginShape();
-    for (let point of this.points) {
-      vertex(point.x, point.y);
-    }
-    endShape();
-    
-    // Draw journey markers along the path
-    this.drawPathMarkers();
-  }
-
-  // Draw dots and markers along the songline
-  drawPathMarkers() {
-    noStroke();
-    
-    // Draw markers at each waypoint
-    for (let i = 0; i < this.points.length; i++) {
-      let point = this.points[i];
-      
-      // Endpoints are larger (starting/ending places)
-      let isEndpoint = i === 0 || i === this.points.length - 1;
-      let outerSize = isEndpoint ? 8 : 6;
-      let innerSize = isEndpoint ? 4 : 3;
-      
-      // Draw outer circle (dark)
-      fill(colors.charcoal);
-      ellipse(point.x, point.y, outerSize * 2, outerSize * 2);
-      
-      // Draw inner circle (light)
-      fill(colors.whiteGum);
-      ellipse(point.x, point.y, innerSize * 2, innerSize * 2);
-    }
-    
-    // Add intermediate dots between waypoints (footprints along the path)
-    for (let i = 0; i < this.points.length - 1; i++) {
-      let p1 = this.points[i];
-      let p2 = this.points[i + 1];
-      let numDots = 5;
-      
-      for (let j = 1; j < numDots; j++) {
-        let t = j / numDots;
-        let x = p1.x + (p2.x - p1.x) * t;
-        let y = p1.y + (p2.y - p1.y) * t;
-        
-        fill(this.col);
-        ellipse(x, y, 5, 5);
-      }
-    }
+function drawOuterPattern(x, y, radius, colorScheme, patternType) {
+  noStroke();
+  fill(colorScheme.outer);
+  ellipse(x, y, radius * 2, radius * 2);
+  
+  if (patternType === 'dots') {
+    drawDotPattern(x, y, radius, colorScheme);
+  } else if (patternType === 'radial') {
+    drawRadialPattern(x, y, radius, colorScheme);
+  } else if (patternType === 'mixed') {
+    drawMixedPattern(x, y, radius, colorScheme);
   }
 }
 
-// =============================================================================
-// HELPER FUNCTIONS
-// =============================================================================
-
-// Create traditional dotted background texture
-function drawDottedBackground() {
-  let dotSize = 1.5;
-  let spacing = 12;
+function drawDotPattern(x, y, radius, colorScheme) {
+  let dotSize = 3;
+  let spacing = 8;
   
-  fill(colors.ochre);
+  fill(colorScheme.dots);
   noStroke();
   
-  // Use low opacity for subtle effect
-  push();
-  drawingContext.globalAlpha = 0.15;
-  
-  for (let x = spacing; x < width; x += spacing) {
-    for (let y = spacing; y < height; y += spacing) {
-      // Add slight randomness for organic, hand-painted feel
-      let offsetX = random(-2, 2);
-      let offsetY = random(-2, 2);
-      
-      ellipse(x + offsetX, y + offsetY, dotSize * 2, dotSize * 2);
+  for (let r = spacing; r < radius; r += spacing) {
+    let circumference = TWO_PI * r;
+    let numDots = floor(circumference / spacing);
+    
+    for (let i = 0; i < numDots; i++) {
+      let angle = (i / numDots) * TWO_PI;
+      let px = x + cos(angle) * r;
+      let py = y + sin(angle) * r;
+      ellipse(px, py, dotSize * 2, dotSize * 2);
     }
   }
+}
+
+function drawRadialPattern(x, y, radius, colorScheme) {
+  let numLines = 60;
+  stroke(colorScheme.dots);
+  strokeWeight(2);
+  
+  for (let i = 0; i < numLines; i++) {
+    let angle = (i / numLines) * TWO_PI;
+    let startR = radius * 0.3;
+    let endR = radius;
+    
+    line(
+      x + cos(angle) * startR,
+      y + sin(angle) * startR,
+      x + cos(angle) * endR,
+      y + sin(angle) * endR
+    );
+  }
+}
+
+function drawMixedPattern(x, y, radius, colorScheme) {
+  let dotSize = 4;
+  let spacing = 10;
+  
+  fill(colorScheme.dots);
+  noStroke();
+  
+  for (let r = spacing; r < radius * 0.7; r += spacing) {
+    let circumference = TWO_PI * r;
+    let numDots = floor(circumference / spacing);
+    
+    for (let i = 0; i < numDots; i++) {
+      let angle = (i / numDots) * TWO_PI;
+      let px = x + cos(angle) * r;
+      let py = y + sin(angle) * r;
+      ellipse(px, py, dotSize * 2, dotSize * 2);
+    }
+  }
+}
+
+function drawConcentricRings(x, y, radius, colorScheme) {
+  let ringCount = 3;
+  let baseRingRadius = radius * 0.28;
+  let ringWidth = baseRingRadius / (ringCount + 1);
+  
+  noFill();
+  
+  for (let i = 0; i < ringCount; i++) {
+    let r = baseRingRadius - (i * ringWidth);
+    stroke(colorScheme.rings[i % colorScheme.rings.length]);
+    strokeWeight(ringWidth * 0.7);
+    ellipse(x, y, r * 2, r * 2);
+  }
+}
+
+function drawCenter(x, y, radius, colorScheme) {
+  noStroke();
+  fill(colors.black);
+  ellipse(x, y, radius * 0.16, radius * 0.16);
+  fill(colorScheme.rings[0]);
+  ellipse(x, y, radius * 0.08, radius * 0.08);
+}
+
+function drawGrid() {
+  let gridSize = 6;
+  let cellW = width / gridSize;
+  let cellH = height / gridSize;
+  
+  push();
+  
+  stroke(255, 255, 0, 150);
+  strokeWeight(1);
+  
+  for (let i = 0; i <= gridSize; i++) {
+    line(i * cellW, 0, i * cellW, height);
+    line(0, i * cellH, width, i * cellH);
+  }
+  
+  fill(255, 255, 0);
+  noStroke();
+  textSize(11);
+  textAlign(LEFT, TOP);
+  
+  for (let col = 0; col < gridSize; col++) {
+    for (let row = 0; row < gridSize; row++) {
+      text(`[${col},${row}]`, col * cellW + 3, row * cellH + 3);
+    }
+  }
+  
+  fill(255, 0, 0);
+  for (let col = 0; col < gridSize; col++) {
+    for (let row = 0; row < gridSize; row++) {
+      let centerX = cellW * (col + 0.5);
+      let centerY = cellH * (row + 0.5);
+      ellipse(centerX, centerY, 5, 5);
+    }
+  }
+  
+  fill(255, 255, 255, 220);
+  rect(10, height - 100, 160, 90, 5);
+  
+  fill(0);
+  textAlign(LEFT, TOP);
+  textSize(12);
+  text('📐 Grid System ON', 15, height - 95);
+  text(`Grid: ${gridSize}×${gridSize}`, 15, height - 75);
+  text('Total circles: 17', 15, height - 55);
+  text('Press G to toggle', 15, height - 35);
+  text('Click for coords', 15, height - 15);
   
   pop();
 }
 
-// =============================================================================
-// WINDOW RESIZE HANDLER
-// =============================================================================
+function keyPressed() {
+  if (key === 'g' || key === 'G') {
+    showGrid = !showGrid;
+    redraw();
+  }
+  
+  if (key === 'h' || key === 'H') {
+    console.log('=== Aboriginal Art - Help ===');
+    console.log('');
+    console.log('Keyboard Shortcuts:');
+    console.log('  G - Toggle grid display');
+    console.log('  H - Show this help');
+    console.log('  Click - Show coordinates');
+    console.log('');
+    console.log('Circle Parameters:');
+    console.log('  Base radius: width / 8');
+    console.log('  Diagonal step: width / 4.8');
+    console.log('  Total circles: 17 (5+4+2+4+2)');
+    console.log('');
+    console.log('Line Configuration:');
+    console.log('  Line 1: 5 circles (main diagonal)');
+    console.log('  Line 2: 4 circles');
+    console.log('  Line 3: 2 circles (right edge)');
+    console.log('  Line 4: 4 circles');
+    console.log('  Line 5: 2 circles (bottom edge)');
+  }
+}
+
+function mousePressed() {
+  let gridSize = 6;
+  let cellW = width / gridSize;
+  let cellH = height / gridSize;
+  
+  let gridCol = floor(mouseX / cellW);
+  let gridRow = floor(mouseY / cellH);
+  
+  console.log('=== Click Info ===');
+  console.log(`Mouse Position: (${mouseX.toFixed(1)}, ${mouseY.toFixed(1)})`);
+  console.log(`Grid Cell: [${gridCol}, ${gridRow}]`);
+  console.log(`Cell Center: (${(cellW * (gridCol + 0.5)).toFixed(1)}, ${(cellH * (gridRow + 0.5)).toFixed(1)})`);
+  console.log(`Relative: (width/${(width/mouseX).toFixed(2)}, height/${(height/mouseY).toFixed(2)})`);
+}
+
 function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-  initializeArtwork();
+  let size = min(windowWidth, windowHeight);
+  resizeCanvas(size, size);
   redraw();
 }
