@@ -24,32 +24,64 @@ class Circle {
 }
 
 function setup() {
-  let size = Math.min(windowWidth, windowHeight);
-  createCanvas(size, size);
+  let size = min(windowWidth, windowHeight);
+  createCanvas(size,size); // 初始画布大小
 }
 
 function draw() {
   background(220);
 
-  let r = width / 7.4;
+  let r = width / 8; // 半径随画布宽度变化
 
   // 在对角线上画 5 个圆
   Circle.displayLine(
-    5,                  // 圆的数量
-    width / 7.1,        // 起始 x
-    height / 7.1,       // 起始 y
-    width / 4.8,        // 每次 x 增量
-    height / 4.8,       // 每次 y 增量
-    r                   // 半径
+    5,
+    width / 7.1,
+    height / 7.1,
+    width / 4.8,
+    height / 4.8,
+    r
   );
+
   Circle.displayLine(
-    5,                  // 圆的数量
-    width *2/ 5,        // 起始 x
-    height *2/ 20,       // 起始 y
-    width / 4.8,        // 每次 x 增量
-    height / 4.8,       // 每次 y 增量
-    r                   // 半径
+    4,
+    width / 2,
+    height * 2 / 20,
+    width / 4.8,
+    height / 4.8,
+    r
+  );
+
+  Circle.displayLine(
+    2,
+    width * 4 / 5,
+    0,
+    width / 4.8,
+    height / 4.8,
+    r
+  );
+
+  Circle.displayLine(
+    4,
+    width / 20,
+    height / 2.2,
+    width / 4.8,
+    height / 4.8,
+    r
+  );
+
+  Circle.displayLine(
+    2,
+    0,
+    height * 8 / 10,
+    width / 4.8,
+    height / 4.8,
+    r
   );
 }
 
-
+// 当窗口大小变化时自动调整画布
+function windowResized() {
+  let size = min(windowWidth, windowHeight);
+  resizeCanvas(size, size);
+}
