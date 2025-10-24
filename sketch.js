@@ -1,3 +1,5 @@
+let bgColor;
+
 class Circle {
   constructor(x, y, r) {
     this.x = x;
@@ -568,7 +570,7 @@ function addPaperTexture() {
   }
 }
 
-let bgColor;
+
 
 function setup() {
   let size = min(windowWidth, windowHeight);
