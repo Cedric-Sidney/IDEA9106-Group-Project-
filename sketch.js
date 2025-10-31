@@ -1,3 +1,5 @@
+let bgColor;
+
 class Circle {
   constructor(x, y, r) {
     this.x = x;
@@ -494,14 +496,19 @@ class Circle {
   }
 
   static displayLine(count, startX, startY, stepX, stepY, r) {
+    let circles = [];
     for (let i = 0; i < count; i++) {
       let x = startX + stepX * i;
       let y = startY + stepY * i;
       let c = new Circle(x, y, r);
+      circles.push(c);
+
       c.display();
       c.displayMiddlePattern();
       c.displayInnerDots();
     }
+
+    return circles;
   }
 }
 
@@ -548,7 +555,7 @@ function drawConnectionDots() {
   }
 }
 
-function addPaperTexture() {
+function addPaperTexture(circles) {
   loadPixels();
   for (let i = 0; i < pixels.length; i += 4) {
     let noise = random(-20, 20);
@@ -557,18 +564,29 @@ function addPaperTexture() {
     pixels[i + 2] += noise;
   }
   updatePixels();
+
+  console.log("圆的数量:", circles.length); // 调试：检查数组
   
   noStroke();
-  for (let i = 0; i < width * height / 500; i++) {
-    let x = random(width);
-    let y = random(height);
-    let size = random(1, 3);
-    fill(random(100, 150), random(30, 80));
-    ellipse(x, y, size);
+  // 为每个圆周围添加脏点
+  for (let circle of circles) {
+    let numDots = floor(random(6, 12)); // 每个圆6-12个脏点
+
+    console.log("为圆添加", numDots, "个脏点"); // 调试：检查每个圆
+    
+    for (let i = 0; i < numDots; i++) {
+      let angle = random(TWO_PI);
+      let distance = circle.r + random(circle.r * 0.1, circle.r * 0.4); // 在圆外围分布
+      let x = circle.x + cos(angle) * distance;
+      let y = circle.y + sin(angle) * distance;
+      let size = random(1, 4);
+      fill(random(100, 150), random(40, 90));
+      ellipse(x, y, size);
+    }
   }
 }
 
-let bgColor;
+
 
 function setup() {
   let size = min(windowWidth, windowHeight);
@@ -593,16 +611,17 @@ function draw() {
   background(bgColor[0], bgColor[1], bgColor[2]);
 
   let r = width / 8;
+  let allCircles = [];
 
-  Circle.displayLine(5, width / 7.1, height / 7.1, width / 4.8, height / 4.8, r);
-  Circle.displayLine(4, width / 2, height * 2 / 20, width / 4.8, height / 4.8, r);
-  Circle.displayLine(2, width * 4 / 5, 0, width / 4.8, height / 4.8, r);
-  Circle.displayLine(4, width / 20, height / 2.2, width / 4.8, height / 4.8, r);
-  Circle.displayLine(2, 0, height * 8 / 10, width / 4.8, height / 4.8, r);
+  allCircles = allCircles.concat(Circle.displayLine(5, width / 7.1, height / 7.1, width / 4.8, height / 4.8, r));
+  allCircles = allCircles.concat(Circle.displayLine(4, width / 2, height * 2 / 20, width / 4.8, height / 4.8, r));
+  allCircles = allCircles.concat(Circle.displayLine(2, width * 4 / 5, 0, width / 4.8, height / 4.8, r));
+  allCircles = allCircles.concat(Circle.displayLine(4, width / 20, height / 2.2, width / 4.8, height / 4.8, r));
+  allCircles = allCircles.concat(Circle.displayLine(2, 0, height * 8 / 10, width / 4.8, height / 4.8, r));
   
   drawConnectionDots();
   
-  addPaperTexture();
+  addPaperTexture(allCircles);
   
   noLoop();
 }
