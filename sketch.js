@@ -1,3 +1,6 @@
+let placedCenters = [];
+let bgColor;
+
 class Circle {
   constructor(x, y, r) {
     this.x = x;
@@ -494,70 +497,285 @@ class Circle {
   }
 
   static displayLine(count, startX, startY, stepX, stepY, r) {
-    let circles = [];
     for (let i = 0; i < count; i++) {
       let x = startX + stepX * i;
       let y = startY + stepY * i;
       let c = new Circle(x, y, r);
-      circles.push(c);
-
       c.display();
       c.displayMiddlePattern();
       c.displayInnerDots();
+      placedCenters.push({ x, y, r });
     }
-
-    return circles;
   }
 }
 
-/*
-function drawConnectionDots() {
-  let dotPositions = [
-    {x: width * 0.15, y: height * 0.3},
-    {x: width * 0.25, y: height * 0.15},
-    {x: width * 0.45, y: height * 0.25},
-    {x: width * 0.65, y: height * 0.15},
-    {x: width * 0.75, y: height * 0.45},
-    {x: width * 0.35, y: height * 0.55},
-    {x: width * 0.15, y: height * 0.75},
-    {x: width * 0.55, y: height * 0.65},
-    {x: width * 0.85, y: height * 0.75}
-  ];
+
+function drawOuterNonOverlappingCircles() {
+  if (placedCenters.length < 2) {
+    const { x, y, r } = placedCenters[0] || {};
+    if (x === undefined) return;
+    const R = r * 1.25;
+    noFill();
+    stroke(0);
+    strokeWeight(r * 0.06);
+    const temp = new Circle(x, y, R);
+    temp.drawHandDrawnCircle(x, y, R, color(0, 0, 0, 0), color(0), r * 0.06);
+    return;
+  }
+
+  const gap = width * 0.01;
+  const baseR = placedCenters[0].r;
+
+  let minDist = Infinity;
+  for (let i = 0; i < placedCenters.length; i++) {
+    for (let j = i + 1; j < placedCenters.length; j++) {
+      const dx = placedCenters[i].x - placedCenters[j].x;
+      const dy = placedCenters[i].y - placedCenters[j].y;
+      const d = Math.hypot(dx, dy);
+      if (d < minDist) minDist = d;
+    }
+  }
+
+  let Rmax = minDist / 2 - gap;
+  const desired = baseR * 1.25;
+  const R = Math.min(Rmax, desired);
+
+  if (!(R > baseR)) {
+    return;
+  }
+
+  noFill();
+  stroke(0);
+  strokeWeight(baseR * 0.06);
+
+  for (const c of placedCenters) {
+    const temp = new Circle(c.x, c.y, R);
+    temp.drawHandDrawnCircle(c.x, c.y, R, color(0, 0, 0, 0), color(0), baseR * 0.06);
+  }
+}
+
+// ===== 工具函数 =====
+
+// 画珠子（黑外圈+白心）
+function drawBead(x, y, s) {
+  // 外圈 - 黑色
+  fill(0);
+  noStroke();
+  let outerPoints = 20;
+  beginShape();
+  for (let i = 0; i < outerPoints; i++) {
+    let angle = (TWO_PI / outerPoints) * i;
+    let jitter = random(-s * 0.12, s * 0.12);
+    let r = s / 2 + jitter;
+    let px = x + cos(angle) * r;
+    let py = y + sin(angle) * r;
+    curveVertex(px, py);
+  }
+  // 闭合曲线
+  for (let i = 0; i < 2; i++) {
+    let angle = (TWO_PI / outerPoints) * i;
+    let jitter = random(-s * 0.12, s * 0.12);
+    let r = s / 2 + jitter;
+    let px = x + cos(angle) * r;
+    let py = y + sin(angle) * r;
+    curveVertex(px, py);
+  }
+  endShape(CLOSE);
   
-  for (let pos of dotPositions) {
-    fill(0);
-    noStroke();
-    let outerSize = width * 0.015;
-    beginShape();
-    for (let i = 0; i < 20; i++) {
-      let angle = (TWO_PI / 20) * i;
-      let jitter = random(-outerSize * 0.15, outerSize * 0.15);
-      let r = outerSize / 2 + jitter;
-      let px = pos.x + cos(angle) * r;
-      let py = pos.y + sin(angle) * r;
-      curveVertex(px, py);
+  // 内心 - 白色
+  fill(255);
+  let innerSize = s * 0.45;
+  let innerPoints = 16;
+  beginShape();
+  for (let i = 0; i < innerPoints; i++) {
+    let angle = (TWO_PI / innerPoints) * i;
+    let jitter = random(-innerSize * 0.1, innerSize * 0.1);
+    let r = innerSize / 2 + jitter;
+    let px = x + cos(angle) * r;
+    let py = y + sin(angle) * r;
+    curveVertex(px, py);
+  }
+  for (let i = 0; i < 2; i++) {
+    let angle = (TWO_PI / innerPoints) * i;
+    let jitter = random(-innerSize * 0.1, innerSize * 0.1);
+    let r = innerSize / 2 + jitter;
+    let px = x + cos(angle) * r;
+    let py = y + sin(angle) * r;
+    curveVertex(px, py);
+  }
+  endShape(CLOSE);
+}
+
+// 画卵石状颗粒
+function drawPebble(x, y, s, col) {
+  fill(col);
+  noStroke();
+  let points = 12;
+  beginShape();
+  for (let i = 0; i < points; i++) {
+    let angle = (TWO_PI / points) * i;
+    let jitter = random(-s * 0.2, s * 0.2);
+    let r = s / 2 * random(0.8, 1.2) + jitter;
+    let px = x + cos(angle) * r;
+    let py = y + sin(angle) * r;
+    curveVertex(px, py);
+  }
+  for (let i = 0; i < 2; i++) {
+    let angle = (TWO_PI / points) * i;
+    let jitter = random(-s * 0.2, s * 0.2);
+    let r = s / 2 * random(0.8, 1.2) + jitter;
+    let px = x + cos(angle) * r;
+    let py = y + sin(angle) * r;
+    curveVertex(px, py);
+  }
+  endShape(CLOSE);
+}
+
+// 构建k近邻边
+function buildNeighborEdges(k) {
+  let edges = [];
+  for (let i = 0; i < placedCenters.length; i++) {
+    let neighbors = [];
+    for (let j = 0; j < placedCenters.length; j++) {
+      if (i === j) continue;
+      let dx = placedCenters[i].x - placedCenters[j].x;
+      let dy = placedCenters[i].y - placedCenters[j].y;
+      let d = sqrt(dx * dx + dy * dy);
+      neighbors.push({ index: j, dist: d });
     }
-    endShape(CLOSE);
+    neighbors.sort((a, b) => a.dist - b.dist);
+    for (let n = 0; n < min(k, neighbors.length); n++) {
+      let j = neighbors[n].index;
+      // 避免重复边
+      if (i < j) {
+        edges.push({ i, j });
+      }
+    }
+  }
+  return edges;
+}
+
+// ===== 绘制珠子链路 =====
+function drawBeadChains() {
+  if (placedCenters.length < 2) return;
+  
+  const baseR = placedCenters[0].r;
+  const edges = buildNeighborEdges(2); // k=2 近邻
+  
+  // 可调参数
+  const amp = baseR * 0.10;           // 链路摆动幅度
+  const beadSpacing = baseR * 0.35;   // 珠子间距
+  const beadSize = baseR * 0.22;      // 珠子尺寸
+  
+  for (const edge of edges) {
+    const c1 = placedCenters[edge.i];
+    const c2 = placedCenters[edge.j];
     
-    fill(255);
-    let innerSize = width * 0.008;
-    beginShape();
-    for (let i = 0; i < 20; i++) {
-      let angle = (TWO_PI / 20) * i;
-      let jitter = random(-innerSize * 0.15, innerSize * 0.15);
-      let r = innerSize / 2 + jitter;
-      let px = pos.x + cos(angle) * r;
-      let py = pos.y + sin(angle) * r;
-      curveVertex(px, py);
+    const dx = c2.x - c1.x;
+    const dy = c2.y - c1.y;
+    const distance = sqrt(dx * dx + dy * dy);  // 改名避免冲突
+    const angle = atan2(dy, dx);
+    
+    // 生成S形路径点
+    let pathPoints = [];
+    let steps = floor(distance / (beadSpacing * 0.5));
+    for (let i = 0; i <= steps; i++) {
+      let t = i / steps;
+      let x = lerp(c1.x, c2.x, t);
+      let y = lerp(c1.y, c2.y, t);
+      
+      // S形摆动
+      let wave = sin(t * PI * 2) * amp;
+      let perpX = -sin(angle);
+      let perpY = cos(angle);
+      
+      x += perpX * wave;
+      y += perpY * wave;
+      
+      pathPoints.push({ x, y });
     }
-    endShape(CLOSE);
+    
+    // 沿路径放置珠子和卵石
+    for (let i = 0; i < pathPoints.length - 1; i++) {
+      let p1 = pathPoints[i];
+      let p2 = pathPoints[i + 1];
+      let segDist = dist(p1.x, p1.y, p2.x, p2.y);
+      
+      let numBeads = floor(segDist / beadSpacing);
+      for (let b = 0; b < numBeads; b++) {
+        let t = b / numBeads;
+        let x = lerp(p1.x, p2.x, t);
+        let y = lerp(p1.y, p2.y, t);
+        
+        // 交替放置珠子
+        if (b % 2 === 0) {
+          drawBead(x, y, beadSize);
+        }
+        
+        // 随机夹杂橙黄卵石
+        if (random() < 0.7) {
+          let offsetX = random(-beadSpacing * 0.3, beadSpacing * 0.3);
+          let offsetY = random(-beadSpacing * 0.3, beadSpacing * 0.3);
+          let pebbleSize = baseR * random(0.16, 0.26);
+          let pebbleColor = color(random(230, 250), random(150, 190), random(50, 90));
+          drawPebble(x + offsetX, y + offsetY, pebbleSize, pebbleColor);
+        }
+      }
+    }
   }
 }
-*/
 
+// ===== 绘制红色触须 =====
+function drawTendrils() {
+  if (placedCenters.length < 2) return;
+  
+  const baseR = placedCenters[0].r;
+  const edges = buildNeighborEdges(3); // k=3 近邻用于触须
+  
+  for (let i = 0; i < placedCenters.length; i++) {
+    // 触须出现概率
+    if (random() < 0.55) {
+      const c = placedCenters[i];
+      
+      // 找到相邻的边
+      let relevantEdges = edges.filter(e => e.i === i || e.j === i);
+      if (relevantEdges.length === 0) continue;
+      
+      // 随机选一条边
+      let edge = random(relevantEdges);
+      let target = (edge.i === i) ? placedCenters[edge.j] : placedCenters[edge.i];
+      
+      // 计算链路中点作为目标
+      let midX = (c.x + target.x) / 2;
+      let midY = (c.y + target.y) / 2;
+      
+      // 贝塞尔控制点
+      let angle = atan2(target.y - c.y, target.x - c.x);
+      let ctrlDist = dist(c.x, c.y, midX, midY) * random(0.3, 0.7);
+      let ctrlAngle = angle + random(-PI/3, PI/3);
+      let ctrlX = c.x + cos(ctrlAngle) * ctrlDist;
+      let ctrlY = c.y + sin(ctrlAngle) * ctrlDist;
+      
+      // 绘制红色触须
+      noFill();
+      stroke(220, 40, 60);  // 红色
+      strokeWeight(baseR * 0.06);
+      
+      // 手绘风贝塞尔曲线
+      beginShape();
+      let steps = 20;
+      for (let t = 0; t <= 1; t += 1/steps) {
+        let x = bezierPoint(c.x, ctrlX, ctrlX, midX, t);
+        let y = bezierPoint(c.y, ctrlY, ctrlY, midY, t);
+        let jitter = random(-baseR * 0.02, baseR * 0.02);
+        curveVertex(x + jitter, y + jitter);
+      }
+      endShape();
+    }
+  }
+}
 
-
-function addPaperTexture(circles) {
+function addPaperTexture() {
   loadPixels();
   for (let i = 0; i < pixels.length; i += 4) {
     let noise = random(-20, 20);
@@ -566,44 +784,30 @@ function addPaperTexture(circles) {
     pixels[i + 2] += noise;
   }
   updatePixels();
-
-  console.log("圆的数量:", circles.length); // 调试：检查数组
   
   noStroke();
-  // 为每个圆周围添加脏点
-  for (let circle of circles) {
-    let numDots = floor(random(6, 12)); // 每个圆6-12个脏点
-
-    console.log("为圆添加", numDots, "个脏点"); // 调试：检查每个圆
-    
-    for (let i = 0; i < numDots; i++) {
-      let angle = random(TWO_PI);
-      let distance = circle.r + random(circle.r * 0.1, circle.r * 0.4); // 在圆外围分布
-      let x = circle.x + cos(angle) * distance;
-      let y = circle.y + sin(angle) * distance;
-      let size = random(1, 4);
-      fill(random(100, 150), random(40, 90));
-      ellipse(x, y, size);
-    }
+  for (let i = 0; i < width * height / 500; i++) {
+    let x = random(width);
+    let y = random(height);
+    let size = random(1, 3);
+    fill(random(100, 150), random(30, 80));
+    ellipse(x, y, size);
   }
 }
-
-
 
 function setup() {
   let size = min(windowWidth, windowHeight);
   createCanvas(size, size);
   
-  // 随机选择浅色背景
   const lightBackgrounds = [
-    [175, 210, 180],  // 浅薄荷绿
-    [180, 200, 210],  // 浅天空蓝
-    [190, 165, 145],  // 浅土红色
-    [210, 195, 165],  // 米黄色
-    [165, 155, 185],  // 浅薰衣草紫
-    [180, 195, 175],  // 浅橄榄绿
-    [185, 180, 200],  // 浅灰紫色
-    [200, 180, 170]   // 浅杏色
+    [175, 210, 180],
+    [180, 200, 210],
+    [190, 165, 145],
+    [210, 195, 165],
+    [165, 155, 185],
+    [180, 195, 175],
+    [185, 180, 200],
+    [200, 180, 170]
   ];
   
   bgColor = random(lightBackgrounds);
@@ -613,17 +817,27 @@ function draw() {
   background(bgColor[0], bgColor[1], bgColor[2]);
 
   let r = width / 8;
-  let allCircles = [];
 
-  allCircles = allCircles.concat(Circle.displayLine(5, width / 7.1, height / 7.1, width / 4.8, height / 4.8, r));
-  allCircles = allCircles.concat(Circle.displayLine(4, width / 2, height * 2 / 20, width / 4.8, height / 4.8, r));
-  allCircles = allCircles.concat(Circle.displayLine(2, width * 4 / 5, 0, width / 4.8, height / 4.8, r));
-  allCircles = allCircles.concat(Circle.displayLine(4, width / 20, height / 2.2, width / 4.8, height / 4.8, r));
-  allCircles = allCircles.concat(Circle.displayLine(2, 0, height * 8 / 10, width / 4.8, height / 4.8, r));
+  placedCenters = [];
   
-  // drawConnectionDots();
+  // 1. 画主圆
+  Circle.displayLine(5, width / 7.1, height / 7.1, width / 4.8, height / 4.8, r);
+  Circle.displayLine(4, width / 2, height * 2 / 20, width / 4.8, height / 4.8, r);
+  Circle.displayLine(2, width * 4 / 5, 0, width / 4.8, height / 4.8, r);
+  Circle.displayLine(4, width / 20, height / 2.2, width / 4.8, height / 4.8, r);
+  Circle.displayLine(2, 0, height * 8 / 10, width / 4.8, height / 4.8, r);
   
-  addPaperTexture(allCircles);
+  // 2. 画外扩圆
+ // drawOuterNonOverlappingCircles();
+  
+  // 3. 画珠子链路
+  // drawBeadChains();
+  
+  // 4. 画红色触须
+  drawTendrils();
+  
+  // 5. 添加纸张纹理
+  addPaperTexture();
   
   noLoop();
 }
