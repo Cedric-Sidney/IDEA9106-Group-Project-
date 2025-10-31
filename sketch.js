@@ -1,3 +1,5 @@
+let textureLayer;
+
 class Circle {
   constructor(x, y, r) {
     this.x = x;
@@ -505,6 +507,7 @@ class Circle {
   }
 }
 
+/*
 function drawConnectionDots() {
   let dotPositions = [
     {x: width * 0.15, y: height * 0.3},
@@ -547,6 +550,7 @@ function drawConnectionDots() {
     endShape(CLOSE);
   }
 }
+*/
 
 function addPaperTexture() {
   loadPixels();
@@ -600,7 +604,7 @@ function draw() {
   Circle.displayLine(4, width / 20, height / 2.2, width / 4.8, height / 4.8, r);
   Circle.displayLine(2, 0, height * 8 / 10, width / 4.8, height / 4.8, r);
   
-  drawConnectionDots();
+  // drawConnectionDots();
   
   addPaperTexture();
   
