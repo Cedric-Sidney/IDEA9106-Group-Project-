@@ -1,5 +1,3 @@
-let textureLayer;
-
 class Circle {
   constructor(x, y, r) {
     this.x = x;
