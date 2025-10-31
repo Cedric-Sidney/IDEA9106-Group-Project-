@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 let bgColor;
 
+=======
+>>>>>>> parent of d4c880a (Update sketch.js)
 class Circle {
   constructor(x, y, r) {
     this.x = x;
