@@ -58,7 +58,8 @@ class Circle {
       2
     );
   }
-
+  //pattern inside big cirlce
+  //case 0 of 13
   displayDotPattern() {
     let dotSize = this.r * 0.04;
     let dotSpacing = this.r * 0.1;
@@ -85,7 +86,7 @@ class Circle {
       i++;
     }
   }
-
+  //case 1 of 13
   displayRadialLines() {
     let colors = this.getPatternColors();
     let numLines = 32;
@@ -113,7 +114,7 @@ class Circle {
       endShape();
     }
   }
-
+  //case 2 of 13
   displayConcentricRings() {
     let colors = this.getPatternColors();
     let numRings = 5;
@@ -141,7 +142,7 @@ class Circle {
       endShape(CLOSE);
     }
   }
-
+  //case 3 of 13
   displayDenseSmallDots() {
     let colors = this.getPatternColors();
     let dotSize = this.r * 0.025;
@@ -166,7 +167,7 @@ class Circle {
       }
     }
   }
-
+  //case 4 of 13
   displaySpiralDots() {
     let colors = this.getPatternColors();
     let dotSize = this.r * 0.035;
@@ -187,7 +188,7 @@ class Circle {
       ellipse(px, py, jitterSize * 2);
     }
   }
-
+  //case 5 of 13
   displayCrossLines() {
     let colors = this.getPatternColors();
     let numLines = 16;
@@ -212,7 +213,7 @@ class Circle {
       endShape();
     }
   }
-
+  //case 6 of 13
   displayWavyRings() {
     let colors = this.getPatternColors();
     let numRings = 6;
@@ -238,7 +239,7 @@ class Circle {
       endShape(CLOSE);
     }
   }
-
+  //case 7 of 13
   displayTriangleDots() {
     let colors = this.getPatternColors();
     let size = this.r * 0.08;
@@ -283,7 +284,7 @@ class Circle {
       }
     }
   }
-
+  //case 8 of 13
   displayGridDots() {
     let colors = this.getPatternColors();
     let dotSize = this.r * 0.04;
@@ -303,7 +304,7 @@ class Circle {
       }
     }
   }
-
+  //case 9 of 13
   displayDoubleRadial() {
     let colors = this.getPatternColors();
     let numLines = 24;
@@ -328,7 +329,7 @@ class Circle {
       endShape();
     }
   }
-
+  //case 10 of 13
   displayArcLines() {
     let colors = this.getPatternColors();
     let numArcs = 12;
@@ -352,7 +353,7 @@ class Circle {
       endShape();
     }
   }
-
+  //case 11 of 13
   displayStarRadial() {
     let colors = this.getPatternColors();
     let numPoints = 16;
@@ -378,7 +379,7 @@ class Circle {
       endShape();
     }
   }
-
+  //case 12 of 13
   displayRingsWithDots() {
     let colors = this.getPatternColors();
     
@@ -417,7 +418,7 @@ class Circle {
       }
     }
   }
-
+  //case 13 of 13
   displayHexagons() {
     let colors = this.getPatternColors();
     let hexSize = this.r * 0.1;
@@ -448,7 +449,7 @@ class Circle {
       }
     }
   }
-
+//pattern within big circle
   displayMiddlePattern() {
     switch(this.patternType) {
       case 0: this.displayDotPattern(); break;
@@ -467,7 +468,7 @@ class Circle {
       case 13: this.displayHexagons(); break;
     }
   }
-
+  //
   displayInnerDots() {
     let colors = this.getPatternColors();
     
@@ -492,7 +493,7 @@ class Circle {
     this.drawHandDrawnCircle(this.x, this.y, this.r / 6.6, colors[0], color(0, 0), 0);
     this.drawHandDrawnCircle(this.x, this.y, this.r / 12, colors[1], color(0, 0), 0);
   }
-
+  //red line
   static displayLine(count, startX, startY, stepX, stepY, r) {
     let circles = [];
     for (let i = 0; i < count; i++) {
