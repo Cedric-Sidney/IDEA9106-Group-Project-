@@ -1,4 +1,3 @@
-function setup() {
 
         let bgColor;
         let dotPositions = [];
