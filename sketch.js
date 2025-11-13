@@ -1,6 +1,7 @@
 
         let bgColor;
         let dotPositions = [];
+        
         class Circle {
             constructor(x, y, r) {
                 this.x = x;
