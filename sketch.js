@@ -1,171 +1,3 @@
-let globalBgColor;
-let circleBasePalette; // Base colours for the circles 
-let dotPalette;        // Colours for patterns/details 
-let circles = [];      // Stores all circle objects
-let connectedNodes = []; // Stores the circles selected as connection nodes (key “VIP” nodes)
-
-function setup() {
-  let size = min(windowWidth, windowHeight);
-  createCanvas(size, size);
-  pixelDensity(2); 
-
-  // --- 1. Colour palette system (Aboriginal-inspired style) ---
-  globalBgColor = color(30, 20, 15); 
-
-  circleBasePalette = [
-    color(90, 40, 20),   // ochre red
-    color(60, 30, 15),   // dark brown
-    color(40, 45, 35),   // eucalyptus green
-    color(110, 60, 30),  // burnt orange
-    color(20, 20, 20)    // charcoal black
-  ];
-
-  dotPalette = [
-    color(255, 255, 255), // pure white
-    color(255, 240, 200), // off-white
-    color(255, 215, 0),   // sun yellow
-    color(255, 140, 80),  // bright ochre
-    color(160, 180, 140), // light green
-    color(200, 200, 210)  // greyish white
-  ];
-}
-
-function draw() {
-  background(globalBgColor); 
-
-  // 1. Draw random white dots that fill the canvas as background texture 
-  drawBackgroundDots();
-
-  // 2. Generate the fixed layout of circle centres
-  createFixedLayout();
-
-  // 3. Draw wide network lines between selected circle centres
-  drawNetworkLines();
-
-  // 4. Draw all circles.
-  for (let c of circles) {
-    c.display();
-  }
-  
-  noLoop(); 
-}
-
-function windowResized() {
-  let size = min(windowWidth, windowHeight);
-  resizeCanvas(size, size);
-  draw();
-}
-
-// --- Layout generation ---
-function createFixedLayout() {
-  circles = []; 
-  connectedNodes = []; 
-  
-  let r = width / 8; 
-
-  addCirclesOnLine(5, width / 7.1, height / 7.1, width / 4.8, height / 4.8, r);
-  addCirclesOnLine(4, width / 2, (height * 2) / 20, width / 4.8, height / 4.8, r);
-  addCirclesOnLine(2, (width * 4) / 5, 0, width / 4.8, height / 4.8, r);
-  addCirclesOnLine(4, width / 20, height / 2.2, width / 4.8, height / 4.8, r);
-  addCirclesOnLine(2, 0, (height * 8) / 10, width / 4.8, height / 4.8, r);
-}
-
-function addCirclesOnLine(count, startX, startY, stepX, stepY, r) {
-  for (let i = 0; i < count; i++) {
-    let x = startX + stepX * i;
-    let y = startY + stepY * i;
-    
-    if (x > -r * 2 && x < width + r * 2 && y > -r * 2 && y < height + r * 2) {
-        let c = new Circle(x, y, r);
-        circles.push(c);
-        if (random(1) < 0.7) {
-            connectedNodes.push(c);
-        }
-    }
-  }
-}
-
-// --- Draw connecting lines ---
-function drawNetworkLines() {
-  let linkColor = color(240, 230, 200, 180); // overall a dark brown tone
-
-  for (let i = 0; i < connectedNodes.length; i++) {
-    for (let j = i + 1; j < connectedNodes.length; j++) {
-        let c1 = connectedNodes[i];
-        let c2 = connectedNodes[j];
-        let d = dist(c1.x, c1.y, c2.x, c2.y);
-        if (d < width / 2.8) { 
-            drawWideLine(c1.x, c1.y, c2.x, c2.y, linkColor); 
-        }
-    }
-  }
-}
-
-/*
-   * Many of the custom patterns in this artwork rely on the combination of
-     beginShape() and curveVertex() to construct irregular, hand-drawn outlines.
-     By sampling points around a circle or along a path and adding random jitter
-     to the radius or position, the code produces soft, organic contours that
-     mimic the appearance of hand-painted lines and dots.
-   
-   * This generative-art approach is used for hand-drawn circles, ellipses, and
-     the wide network lines, producing a cohesive, natural texture throughout the
-     composition. The randomness is carefully controlled to avoid harshness while
-     still emphasizing imperfection and individuality in each shape.
-   
-   * Technique reference:
-     - p5.js beginShape(): https://p5js.org/reference/p5/beginShape/
-     - p5.js curveVertex(): https://p5js.org/reference/p5/curveVertex/
-*/
-
-function drawWideLine(x1, y1, x2, y2, col) {
-  noFill();
-  stroke(col);
-  strokeWeight(random(8, 12)); 
-  strokeCap(ROUND); 
-  
-  let jitterStrength = 2; 
-
-  beginShape();
-  curveVertex(x1, y1); 
-  curveVertex(x1, y1);
-
-  let steps = floor(dist(x1, y1, x2, y2) / 20); 
-  for (let i = 1; i < steps; i++) {
-    let t = i / steps;
-    let x = lerp(x1, x2, t) + random(-jitterStrength, jitterStrength);
-    let y = lerp(y1, y2, t) + random(-jitterStrength, jitterStrength);
-    curveVertex(x, y);
-  }
-  curveVertex(x2, y2); 
-  curveVertex(x2, y2);
-  endShape();
-}
-
-// --- Background texture: dense random scattered white dots ---
-/*
- * This background texture uses probabilistic dot density to distribute thousands of 
-   semi-transparent white dots across the canvas. Extends class examples by using area-based 
-   density control to maintain consistent texture across canvas sizes
- */
-
-function drawBackgroundDots() {
-  noStroke();
-  
-  let density = 0.004; 
-  let numDots = floor(width * height * density); 
-
-  for (let i = 0; i < numDots; i++) {
-    let x = random(width);
-    let y = random(height);
-    
-    let dotSize = random(1.5, 4); 
-    let alpha = random(100, 200); 
-    
-    fill(255, 255, 255, alpha); // Pure white, semi-transparent
-    ellipse(x, y, dotSize);
-  }
-}
 
 // ======================================================
 // =================== CIRCLE CLASS ===================
@@ -432,5 +264,156 @@ class Circle {
        }
        endShape();
     }
+  }
+}
+let globalBgColor;   // Background colour
+let circleBasePalette; // Base colours for the circles 
+let dotPalette;        // Colours for patterns/details 
+let circles = [];      // Stores all circle objects
+let connectedNodes = []; // Stores the circles selected as connection nodes (key “VIP” nodes)
+
+function setup() {
+  let size = min(windowWidth, windowHeight);
+  createCanvas(size, size);
+  pixelDensity(2); 
+
+  // --- 1. Colour palette system (Aboriginal-inspired style) ---
+  globalBgColor = color(30, 20, 15); 
+
+  circleBasePalette = [
+    color(90, 40, 20),   // ochre red
+    color(60, 30, 15),   // dark brown
+    color(40, 45, 35),   // eucalyptus green
+    color(110, 60, 30),  // burnt orange
+    color(20, 20, 20)    // charcoal black
+  ];
+
+  dotPalette = [
+    color(255, 255, 255), // pure white
+    color(255, 240, 200), // off-white
+    color(255, 215, 0),   // sun yellow
+    color(255, 140, 80),  // bright ochre
+    color(160, 180, 140), // light green
+    color(200, 200, 210)  // greyish white
+  ];
+}
+
+function draw() {
+  background(globalBgColor); 
+
+  // 1. Draw random white dots that fill the canvas as background texture 
+  drawBackgroundDots();
+
+  // 2. Generate the fixed layout of circle centres
+  createFixedLayout();
+
+  // 3. Draw wide network lines between selected circle centres
+  drawNetworkLines();
+
+  // 4. Draw all circles.
+  for (let c of circles) {
+    c.display();
+  }
+  
+  noLoop(); 
+}
+
+function windowResized() {
+  let size = min(windowWidth, windowHeight);
+  resizeCanvas(size, size);
+  draw();
+}
+
+// --- Layout generation ---
+function createFixedLayout() {
+  circles = []; 
+  connectedNodes = []; 
+  
+  let r = width / 8; 
+
+  addCirclesOnLine(5, width / 7.1, height / 7.1, width / 4.8, height / 4.8, r);
+  addCirclesOnLine(4, width / 2, (height * 2) / 20, width / 4.8, height / 4.8, r);
+  addCirclesOnLine(2, (width * 4) / 5, 0, width / 4.8, height / 4.8, r);
+  addCirclesOnLine(4, width / 20, height / 2.2, width / 4.8, height / 4.8, r);
+  addCirclesOnLine(2, 0, (height * 8) / 10, width / 4.8, height / 4.8, r);
+}
+
+function addCirclesOnLine(count, startX, startY, stepX, stepY, r) {
+  for (let i = 0; i < count; i++) {
+    let x = startX + stepX * i;
+    let y = startY + stepY * i;
+    
+    if (x > -r * 2 && x < width + r * 2 && y > -r * 2 && y < height + r * 2) {
+        let c = new Circle(x, y, r);
+        circles.push(c);
+        if (random(1) < 0.7) {
+            connectedNodes.push(c);
+        }
+    }
+  }
+}
+
+// --- Draw connecting lines ---
+function drawNetworkLines() {
+  let linkColor = color(240, 230, 200, 180); // overall a dark brown tone
+
+  for (let i = 0; i < connectedNodes.length; i++) {
+    for (let j = i + 1; j < connectedNodes.length; j++) {
+        let c1 = connectedNodes[i];
+        let c2 = connectedNodes[j];
+        let d = dist(c1.x, c1.y, c2.x, c2.y);
+        if (d < width / 2.8) { 
+            drawWideLine(c1.x, c1.y, c2.x, c2.y, linkColor); 
+        }
+    }
+  }
+}
+
+/*
+   * Many of the custom patterns in this artwork rely on the combination of
+     beginShape() and curveVertex() to construct irregular, hand-drawn outlines.
+     By sampling points around a circle or along a path and adding random jitter
+     to the radius or position, the code produces soft, organic contours that
+     mimic the appearance of hand-painted lines and dots.
+   
+   * This generative-art approach is used for hand-drawn circles, ellipses, and
+     the wide network lines, producing a cohesive, natural texture throughout the
+     composition. The randomness is carefully controlled to avoid harshness while
+     still emphasizing imperfection and individuality in each shape.
+   
+   * Technique reference:
+     - p5.js beginShape(): https://p5js.org/reference/p5/beginShape/
+     - p5.js curveVertex(): https://p5js.org/reference/p5/curveVertex/
+*/
+
+function drawWideLine(x1, y1, x2, y2, col) {
+  stroke(col);
+  strokeWeight(10); // 设置统一的线宽 (你可以修改这个数字来调整粗细)
+  strokeCap(ROUND); // 线条两端保持圆润
+  line(x1, y1, x2, y2); // 直接绘制直线
+}
+
+// --- Background texture: dense random scattered white dots ---
+/*
+ * This background texture uses probabilistic dot density to distribute thousands of 
+   semi-transparent white dots across the canvas. Extends class examples by using area-based 
+   density control to maintain consistent texture across canvas sizes
+ */
+
+function drawBackgroundDots() {
+  noStroke();
+  
+  let density = 0.004; 
+  let numDots = floor(width * height * density); 
+
+  for (let i = 0; i < numDots; i++) {
+    let x = random(width);
+    let y = random(height);
+    
+    let dotSize = random(1.5, 4); 
+    let alpha = random(100, 200); 
+    
+    fill(255, 255, 255, alpha); // Pure white, semi-transparent
+    ellipse(x, y, dotSize);
   }
 }
