@@ -1,48 +1,48 @@
 let globalBgColor;
-let circleBasePalette; // 圆盘底色 (深沉大地色)
-let dotPalette;        // 纹样颜色 (高亮对比色)
-let circles = [];      // 存储所有圆对象
-let connectedNodes = []; // 存储被选中用于连接的圆 (VIP节点)
+let circleBasePalette; // Base colours for the circles 
+let dotPalette;        // Colours for patterns/details 
+let circles = [];      // Stores all circle objects
+let connectedNodes = []; // Stores the circles selected as connection nodes (key “VIP” nodes)
 
 function setup() {
   let size = min(windowWidth, windowHeight);
   createCanvas(size, size);
   pixelDensity(2); 
 
-  // --- 1. 配色系统 (澳洲土著风格) ---
+  // --- 1. Colour palette system (Aboriginal-inspired style) ---
   globalBgColor = color(30, 20, 15); 
 
   circleBasePalette = [
-    color(90, 40, 20),   // 赭石红
-    color(60, 30, 15),   // 深褐
-    color(40, 45, 35),   // 桉树绿
-    color(110, 60, 30),  // 焦橙
-    color(20, 20, 20)    // 炭黑
+    color(90, 40, 20),   // ochre red
+    color(60, 30, 15),   // dark brown
+    color(40, 45, 35),   // eucalyptus green
+    color(110, 60, 30),  // burnt orange
+    color(20, 20, 20)    // charcoal black
   ];
 
   dotPalette = [
-    color(255, 255, 255), // 纯白
-    color(255, 240, 200), // 米白
-    color(255, 215, 0),   // 太阳黄
-    color(255, 140, 80),  // 亮赭色
-    color(160, 180, 140), // 浅绿
-    color(200, 200, 210)  // 灰白
+    color(255, 255, 255), // pure white
+    color(255, 240, 200), // off-white
+    color(255, 215, 0),   // sun yellow
+    color(255, 140, 80),  // bright ochre
+    color(160, 180, 140), // light green
+    color(200, 200, 210)  // greyish white
   ];
 }
 
 function draw() {
   background(globalBgColor); 
 
-  // 1. 画充满整个画布的随机散点 (纯白且更明显)
+  // 1. Draw random white dots that fill the canvas as background texture 
   drawBackgroundDots();
 
-  // 2. 生成固定布局
+  // 2. Generate the fixed layout of circle centres
   createFixedLayout();
 
-  // 3. 画圆心连接线 (宽线)
+  // 3. Draw wide network lines between selected circle centres
   drawNetworkLines();
 
-  // 4. 画所有的圆
+  // 4. Draw all circles.
   for (let c of circles) {
     c.display();
   }
@@ -56,7 +56,7 @@ function windowResized() {
   draw();
 }
 
-// --- 布局生成 ---
+// --- Layout generation ---
 function createFixedLayout() {
   circles = []; 
   connectedNodes = []; 
@@ -85,9 +85,9 @@ function addCirclesOnLine(count, startX, startY, stepX, stepY, r) {
   }
 }
 
-// --- 绘制连接线 (宽线样式) ---
+// --- Draw connecting lines ---
 function drawNetworkLines() {
-  let linkColor = color(240, 230, 200, 180); // 第四个数字 180 是透明度; // 深褐色
+  let linkColor = color(240, 230, 200, 180); // overall a dark brown tone
 
   for (let i = 0; i < connectedNodes.length; i++) {
     for (let j = i + 1; j < connectedNodes.length; j++) {
@@ -100,6 +100,23 @@ function drawNetworkLines() {
     }
   }
 }
+
+/*
+   * Many of the custom patterns in this artwork rely on the combination of
+     beginShape() and curveVertex() to construct irregular, hand-drawn outlines.
+     By sampling points around a circle or along a path and adding random jitter
+     to the radius or position, the code produces soft, organic contours that
+     mimic the appearance of hand-painted lines and dots.
+   
+   * This generative-art approach is used for hand-drawn circles, ellipses, and
+     the wide network lines, producing a cohesive, natural texture throughout the
+     composition. The randomness is carefully controlled to avoid harshness while
+     still emphasizing imperfection and individuality in each shape.
+   
+   * Technique reference:
+     - p5.js beginShape(): https://p5js.org/reference/p5/beginShape/
+     - p5.js curveVertex(): https://p5js.org/reference/p5/curveVertex/
+*/
 
 function drawWideLine(x1, y1, x2, y2, col) {
   noFill();
@@ -125,7 +142,13 @@ function drawWideLine(x1, y1, x2, y2, col) {
   endShape();
 }
 
-// --- 【修改】背景纹理：充满随机散落的散点 (纯白且更明显) ---
+// --- Background texture: dense random scattered white dots ---
+/*
+ * This background texture uses probabilistic dot density to distribute thousands of 
+   semi-transparent white dots across the canvas. Extends class examples by using area-based 
+   density control to maintain consistent texture across canvas sizes
+ */
+
 function drawBackgroundDots() {
   noStroke();
   
@@ -136,19 +159,24 @@ function drawBackgroundDots() {
     let x = random(width);
     let y = random(height);
     
-    let dotSize = random(1.5, 4); // 增加平均大小
-    let alpha = random(100, 200); // 增加透明度，使其更明显
+    let dotSize = random(1.5, 4); 
+    let alpha = random(100, 200); 
     
-    fill(255, 255, 255, alpha); // 纯白色，半透明
+    fill(255, 255, 255, alpha); // Pure white, semi-transparent
     ellipse(x, y, dotSize);
   }
 }
 
 // ======================================================
-// =================== CIRCLE 类 ===================
+// =================== CIRCLE CLASS ===================
 // ======================================================
 
 class Circle {
+  /*
+   * Each Circle object randomly selects pattern types for its outer, middle,
+     and inner layers. This modular structure expands on the OOP techniques from class,
+     enabling controlled variation through generative rules.
+   */
   constructor(x, y, r) {
     this.x = x;
     this.y = y;
@@ -161,7 +189,7 @@ class Circle {
     this.irregularity = 0.02; 
   }
 
-  // --- 绘图工具 ---
+  // --- Drawing utilities ---
   drawIrregularBlob(x, y, size, col) {
     fill(col);
     noStroke();
@@ -179,6 +207,7 @@ class Circle {
     pop();
   }
 
+
   drawHandDrawnCircle(x, y, r, fillCol, strokeCol, strokeW) {
     if (fillCol) fill(fillCol); else noFill();
     if (strokeCol) stroke(strokeCol); else noStroke();
@@ -194,6 +223,7 @@ class Circle {
     }
     endShape(CLOSE);
   }
+
 
   drawHandDrawnEllipse(x, y, w, h, rotation, col) {
     fill(col);
@@ -268,11 +298,13 @@ class Circle {
     }
   }
 
-  // 2. 粗条纹环 - 密集版
+  // 2. Thick striped ring pattern – dense version
   drawOuterStripedRingPattern(col) {
     noFill();
     stroke(col);
+    // Base stroke weight for the stripes
     let baseStrokeWeight = this.r * 0.025; 
+    // Number of concentric rings
     let numRings = 5; 
     for (let i = 0; i < numRings; i++) {
         let radius = map(i, 0, numRings - 1, this.r * 0.65, this.r * 0.9);
@@ -281,7 +313,15 @@ class Circle {
     }
   }
 
-  // 3. 正弦弹簧
+  // 3. Sine-wave “spring” outer contour
+  /*
+   * This outer pattern applies a sinusoidal modulation to the circle’s radius.
+   
+   * While sin() was covered in class, using it to deform a circular boundary is
+     an extended generative-art technique that creates rhythmic, organic structures.
+     
+   */
+
   drawOuterRadialDashPattern(col) {
     noFill(); 
     stroke(col); 
@@ -350,11 +390,13 @@ class Circle {
     this.drawHandDrawnCircle(this.x, this.y, this.r * 0.3, col2, null, 0);
   }
 
-  // 3. 同心手绘折线 - 密集版
+  // 3. Concentric hand-drawn irregular lines – dense version
   drawMiddleConcentricIrregularLines(col) {
     noFill();
     stroke(col);
+    // Base stroke weight for the irregular rings
     let baseStrokeWeight = this.r * 0.01; 
+    // Number of concentric irregular rings
     let numRings = 7; 
     for (let j = 0; j < numRings; j++) {
         let currentRadius = map(j, 0, numRings - 1, this.r * 0.2, this.r * 0.5);
