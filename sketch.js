@@ -1,6 +1,11 @@
-// ======================================================
-// =================== Global Variables ===================
-// ======================================================
+// =======================================================================
+// ======================== Global Variables =============================
+// =======================================================================
+// This section defines all shared state used across the sketch, including
+// the global background colour, colour palettes for circles and patterns,
+// and the arrays that store Circle objects and the subset of circles used
+// as connection nodes. These variables are initialised in setup() and then
+// read by the drawing functions in draw(), layout, and the Circle class.
 
 let globalBgColor;       // Background colour
 let circleBasePalette;   // Base colours for the circles (Deep Earth tones)
@@ -70,9 +75,14 @@ function windowResized() {
   draw();
 }
 
-// ======================================================
-// =================== Layout & Background ================
-// ======================================================
+// =========================================================================
+// ======================= Layout & Background =============================
+// =========================================================================
+// This section is responsible for the overall composition of the artwork.
+// It generates the fixed layout of circle centres, selects some of them as
+// "VIP" nodes for the network layer, draws the distance-based connection
+// lines between those nodes, and renders the random dot background texture
+// that sits underneath all circles.
 
 // --- Layout generation ---
 function createFixedLayout() {
@@ -157,10 +167,15 @@ function drawBackgroundDots() {
   pop();
 }
 
-// ======================================================
-// =================== CIRCLE CLASS ===================
-// ======================================================
-
+// ======================================================================
+// ======================== CIRCLE CLASS ================================
+// ======================================================================
+// The Circle class encapsulates all logic for drawing a single circular
+// motif. Each Circle instance stores its position, radius, and randomly
+// chosen pattern types for the outer, middle, and inner layers. The class
+// provides a display() method that renders the circle as a three-layer
+// structure (buffer, outer, middle, inner) using a variety of generative
+// pattern functions.
 
 class Circle {
   /*
