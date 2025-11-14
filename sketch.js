@@ -13,8 +13,9 @@ function setup() {
   let size = min(windowWidth, windowHeight);
   createCanvas(size, size);
   
-  // Increase pixel density for crisp edges on high-res displays
-  // This technique ensures artwork looks high-quality on Retina screens
+  // NOTE: pixelDensity() was not covered in class. 
+  // It comes from the p5.js reference: https://p5js.org/reference/p5/pixelDensity/
+  // It increases the device pixel ratio so the artwork renders more sharply on high-DPI/Retina screens.
   pixelDensity(2); 
 
   // --- 1. Colour palette system (Aboriginal-inspired style) ---
@@ -160,6 +161,7 @@ function drawBackgroundDots() {
 // =================== CIRCLE CLASS ===================
 // ======================================================
 
+
 class Circle {
   /*
      Each Circle object randomly selects pattern types for its outer, middle,
@@ -200,13 +202,18 @@ class Circle {
   }
 
   // --- Drawing Utilities (Helpers) ---
+    /*
+        Many of the custom shapes in this sketch use beginShape() together with
+        curveVertex() to build smooth, organic outlines instead of perfect geometric primitives. 
+        This technique was not fully covered in class and is adapted from the official p5.js reference:
+            - beginShape(): https://p5js.org/reference/p5/beginShape/
+            - curveVertex(): https://p5js.org/reference/p5/curveVertex/
+        By adding small random jitter to the radii of points before calling
+        curveVertex(), we simulate hand-drawn contours and irregular blobs.
+    */
 
-  /*
-   * drawIrregularBlob:
-   * Uses beginShape() and curveVertex() to construct irregular, hand-drawn dots.
-   * By adding random jitter to the radius, it creates organic contours.
-   */
   drawIrregularBlob(rOffset, angle, size, col) {
+    //beginShape() + curveVertex()： draw a small, irregular dot shape at a given radial offset and angle.
     // Calculate position based on polar coordinates
     let x = cos(angle) * rOffset;
     let y = sin(angle) * rOffset;
@@ -229,8 +236,10 @@ class Circle {
     pop();
   }
 
-  // Helper to draw the large base circles with wobbly edges
+  
   drawHandDrawnCircle(r, fillCol, strokeCol, strokeW) {
+    // draws a large base circle with a slightly jittered radius, 
+    // beginShape() + curveVertex(): described above to create an organic, hand-drawn outline.
     if (fillCol) fill(fillCol); else noFill();
     if (strokeCol) stroke(strokeCol); else noStroke();
     if (strokeW) strokeWeight(strokeW);
@@ -247,8 +256,11 @@ class Circle {
     endShape(CLOSE);
   }
 
-  // Helper to draw wobbly ellipses (used in Outer Pattern 0)
+ 
   drawHandDrawnEllipse(rOffset, angle, w, h, rotation, col) {
+    // uses the same beginShape() + curveVertex() approach to construct a wobbly ellipse at a given offset. 
+    // The radii along the ellipse are randomly varied so the shape looks hand-drawn rather than
+    // mathematically perfect.
     let x = cos(angle) * rOffset;
     let y = sin(angle) * rOffset;
 
@@ -332,6 +344,7 @@ class Circle {
 
   // Pattern 3: Radial Dash (Sine Wave Spring)
   // Uses sin() to create a continuous wavy circumference
+ // This pattern also relies on beginShape() + curveVertex() to render the wavy outer contour as a continuous organic loop.
   drawOuterRadialDashPattern(col) {
     noFill(); 
     stroke(col); 
@@ -439,6 +452,8 @@ class Circle {
        noFill();
        stroke(patCol);
        strokeWeight(this.r * 0.015);
+        // Here we again use beginShape() + curveVertex() to build a spiral-like
+       // path, applying the same hand-drawn curve technique to the inner core.
        beginShape();
        for (let i = 0; i < 50; i++) {
          let r = map(i, 0, 50, 0, this.r * 0.2);
