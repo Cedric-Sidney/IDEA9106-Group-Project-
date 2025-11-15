@@ -91,7 +91,7 @@ function drawNetworkLines() {
 /*
     This background texture uses probabilistic dot density to distribute thousands of 
     semi-transparent white dots across the canvas. 
- */
+*/
 
 function drawBackgroundDots() {
     push();
@@ -308,9 +308,9 @@ class Circle {
         for (let i = 0; i < numRings; i++) {
             let radius = map(i, 0, numRings - 1, this.r * 0.65, this.r * 0.9);
             // The map() function scales a value from one range to another.
-            // Here, it takes the loop counter 'i' (which goes from 0 to numRings - 1)
-            // and converts it to a corresponding radius value within the desired range
-            // (from this.r * 0.65 to this.r * 0.9).
+            // Here, it takes the loop counter 'i' (which goes from 0 to numRings - 1)
+            // and converts it to a corresponding radius value within the desired range
+            // (from this.r * 0.65 to this.r * 0.9).
             strokeWeight(baseStrokeWeight * random(0.8, 1.2)); 
             this.drawHandDrawnCircle(radius, null, col, null);
             // Because we don't want a circle with fill, we pass 'null' for fillCol.
@@ -382,14 +382,14 @@ class Circle {
         for (let i = 0; i < count; i++) {
             let angle = (TWO_PI / count) * i;
             // Calculate the angle for this specific shape's position around the circle.
-            // (e.g., 0, 45, 90, 135 degrees...)
+            // (e.g., 0, 45, 90, 135 degrees...)
             push();
             rotate(angle); 
             translate(r, 0); 
             rotate(PI/2); 
             arc(0, 0, this.r*0.15, this.r*0.15, 0, PI); 
             // An arc from 0 to PI (180 degrees) creates a U-shape.
-            // The size of the arc is relative to the main circle's radius.
+            // The size of the arc is relative to the main circle's radius.
             pop();
         }
     }
