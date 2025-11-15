@@ -67,12 +67,16 @@ function drawNetworkLines() {
     push(); 
     stroke(linkColor);
     strokeWeight(10); // Fixed wide width
+    // strokeCap(ROUND) sets rounded line endings for smoother, organic-looking connectors.
+    // From the p5.js reference: https://p5js.org/reference/p5/strokeCap/
     strokeCap(ROUND); // Rounded ends for natural look
 
     for (let i = 0; i < connectedNodes.length; i++) {
         for (let j = i + 1; j < connectedNodes.length; j++) {
             let c1 = connectedNodes[i];
             let c2 = connectedNodes[j];
+            // Compute Euclidean distance between two circle centers.
+            // dist() is from the p5.js reference: https://p5js.org/reference/p5/dist/
             let d = dist(c1.x, c1.y, c2.x, c2.y); // Calculate distance between two nodes
             // Only connect nodes that are within a certain distance, so that circles next to each other are connected
             if (d < width / 2.8) { 
