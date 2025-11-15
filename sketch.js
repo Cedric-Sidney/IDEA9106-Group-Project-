@@ -92,15 +92,15 @@ function drawBackgroundDots() {
   push();
   noStroke();
   
-  let density = 0.004; 
-  let numDots = floor(width * height * density); 
+  let density = 0.004; // Controls how many dots per pixel area.
+  let numDots = floor(width * height * density); // Calculate the total number of dots based on canvas area and desired density.
 
   for (let i = 0; i < numDots; i++) {
-    let x = random(width);
-    let y = random(height);
+    let x = random(width); // Random x position within canvas
+    let y = random(height); // Random y position within canvas
     
-    let dotSize = random(1.5, 4); 
-    let alpha = random(100, 200); 
+    let dotSize = random(width * 0.002, width * 0.005);// Set dot size relative to canvas width for responsiveness.
+    let alpha = random(100, 200);  // We want the dots have different opacity, so they look like shining stars.
     
     fill(255, 255, 255, alpha); // Pure white, varying opacity
     ellipse(x, y, dotSize);
