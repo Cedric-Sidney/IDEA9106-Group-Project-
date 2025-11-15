@@ -89,9 +89,10 @@ function drawNetworkLines() {
 
 // --- Background texture: dense random scattered white dots ---
 /*
- * This background texture uses probabilistic dot density to distribute thousands of 
- * semi-transparent white dots across the canvas. 
+    This background texture uses probabilistic dot density to distribute thousands of 
+    semi-transparent white dots across the canvas. 
  */
+
 function drawBackgroundDots() {
     push();
     noStroke();
@@ -122,11 +123,11 @@ function drawBackgroundDots() {
 // pattern functions.
 
 class Circle {
-  /*
-     Each Circle object randomly selects pattern types for its outer, middle,
-     and inner layers. This modular structure expands on OOP techniques,
-     enabling controlled variation through generative rules.
-   */
+/*
+    Each Circle object randomly selects pattern types for its outer, middle,
+    and inner layers. This modular structure expands on OOP techniques,
+    enabling controlled variation through generative rules.
+*/
     constructor(x, y, r) {
         this.x = x;
         this.y = y;
@@ -140,8 +141,8 @@ class Circle {
         this.irregularity = 0.02; 
     }
 
-  // --- Main Display Method ---
-  // Uses push/pop/translate to simplify drawing coordinates (relative to center 0,0)
+    // --- Main Display Method ---
+    // Uses push/pop/translate to simplify drawing coordinates (relative to center 0,0)
     display() {
         push(); 
         
@@ -160,7 +161,7 @@ class Circle {
         pop(); // Restore coordinate system
     }
 
-  // --- Drawing Utilities (Helpers) ---
+    // --- Drawing Utilities (Helpers) ---
     /*
         Many of the custom shapes in this sketch use beginShape() together with
         curveVertex() to build smooth, organic outlines instead of perfect geometric primitives. 
@@ -243,7 +244,7 @@ class Circle {
         pop(); 
   }
 
-  // ================= OUTER PATTERNS =================
+    // ================= OUTER PATTERNS =================
     displayOuterPattern() {
         // we want random color to increase the diversity of the outer patterns
         let baseColor = random(circleBasePalette);
@@ -259,7 +260,7 @@ class Circle {
         }
     }
 
-  // Pattern 0: Irregular Dots Ring
+    // Pattern 0: Irregular Dots Ring
     drawOuterDotsPattern(col) {
         let dotSize = this.r * 0.07;  
         let dotSpacing = this.r * 0.09; 
@@ -276,8 +277,8 @@ class Circle {
         }
     }
 
-  // Pattern 1: Radiating Lines (Sunburst)
-  // Uses rotate() to simplify drawing lines radiating from center
+    // Pattern 1: Radiating Lines (Sunburst)
+    // Uses rotate() to simplify drawing lines radiating from center
     drawOuterRadiatingLinesPattern(col) {
         let numLines = 40;
         stroke(col);
@@ -297,7 +298,7 @@ class Circle {
         }
     }
 
-  // Pattern 2: Striped Ring
+    // Pattern 2: Striped Ring
     drawOuterStripedRingPattern(col) {
         noFill();
         stroke(col);
@@ -315,9 +316,10 @@ class Circle {
             // Because we don't want a circle with fill, we pass 'null' for fillCol.
         }
     }
-// Pattern 3: Radial Dash (Sine Wave Spring)
-  // Uses sin() to create a continuous wavy circumference
- // This pattern also relies on beginShape() + curveVertex() to render the wavy outer contour as a continuous organic loop.
+    
+    // Pattern 3: Radial Dash (Sine Wave Spring)
+    // Uses sin() to create a continuous wavy circumference
+    // This pattern also relies on beginShape() + curveVertex() to render the wavy outer contour as a continuous organic loop.
     drawOuterRadialDashPattern(col) {
         noFill(); 
         stroke(col); 
@@ -341,7 +343,7 @@ class Circle {
         endShape(CLOSE); 
     }
 
-  // ================= MIDDLE PATTERNS =================
+    // ================= MIDDLE PATTERNS =================
     displayMiddlePattern() {
         let midBgColor = random(circleBasePalette);
         this.drawHandDrawnCircle(this.r * 0.55, midBgColor, null, 0);
@@ -368,8 +370,8 @@ class Circle {
         }
     }
 
-  // Pattern 1: U-Shape Symbols
-  // Represents a person sitting in Indigenous art
+    // Pattern 1: U-Shape Symbols
+    // Represents a person sitting in Indigenous art
     drawMiddleUshapePattern(col) {
         noFill();
         stroke(col);
@@ -392,7 +394,7 @@ class Circle {
         }
     }
 
-  // Pattern 2: Solid Rings
+    // Pattern 2: Solid Rings
     drawMiddleSolidRings(col) {
         this.drawHandDrawnCircle(this.r * 0.45, col, null, 0);
         let col2 = random(patternPalette);
@@ -420,7 +422,7 @@ class Circle {
         }
     }
 
-  // ================= INNER PATTERNS =================
+    // ================= INNER PATTERNS =================
     displayInnerPattern() {
         this.drawHandDrawnCircle(this.r * 0.25, random(circleBasePalette), null, 0);
         let patCol = random(patternPalette);
