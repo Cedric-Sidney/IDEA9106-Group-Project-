@@ -240,7 +240,7 @@ class Circle {
         pop(); 
   }
 
-  // ================= OUTER PATTERNS =================
+    // ================= OUTER PATTERNS =================
     displayOuterPattern() {
         let baseColor = random(circleBasePalette);
         this.drawHandDrawnCircle(this.r, baseColor, color(0, 50), 2);
@@ -254,7 +254,7 @@ class Circle {
         }
     }
 
-  // Pattern 0: Irregular Dots Ring
+    // Pattern 0: Irregular Dots Ring
     drawOuterDotsPattern(col) {
         let dotSize = this.r * 0.07; 
         let dotSpacing = this.r * 0.09; 
@@ -267,8 +267,8 @@ class Circle {
         }
     }
 
-  // Pattern 1: Radiating Lines (Sunburst)
-  // Uses rotate() to simplify drawing lines radiating from center
+    // Pattern 1: Radiating Lines (Sunburst)
+    // Uses rotate() to simplify drawing lines radiating from center
     drawOuterRadiatingLinesPattern(col) {
         let numLines = 40;
         stroke(col);
@@ -288,7 +288,7 @@ class Circle {
         }
     }
 
-  // Pattern 2: Striped Ring
+     // Pattern 2: Striped Ring
     drawOuterStripedRingPattern(col) {
         noFill();
         stroke(col);
@@ -300,9 +300,10 @@ class Circle {
             this.drawHandDrawnCircle(radius, null, col, null);
         }
     }
-// Pattern 3: Radial Dash (Sine Wave Spring)
-  // Uses sin() to create a continuous wavy circumference
- // This pattern also relies on beginShape() + curveVertex() to render the wavy outer contour as a continuous organic loop.
+    
+    // Pattern 3: Radial Dash (Sine Wave Spring)
+    // Uses sin() to create a continuous wavy circumference
+    // This pattern also relies on beginShape() + curveVertex() to render the wavy outer contour as a continuous organic loop.
     drawOuterRadialDashPattern(col) {
         noFill(); 
         stroke(col); 
@@ -323,7 +324,7 @@ class Circle {
         endShape(CLOSE); 
     }
 
-  // ================= MIDDLE PATTERNS =================
+    // ================= MIDDLE PATTERNS =================
     displayMiddlePattern() {
         let midBgColor = random(circleBasePalette);
         this.drawHandDrawnCircle(this.r * 0.55, midBgColor, null, 0);
@@ -337,7 +338,7 @@ class Circle {
         }
     }
 
-  // Pattern 0: Concentric Dots
+    // Pattern 0: Concentric Dots
     drawMiddleConcentricDotsPattern(col) {
         let dotSize = this.r * 0.04;
         for (let r = this.r * 0.2; r < this.r * 0.5; r += dotSize * 1.5) {
@@ -349,8 +350,8 @@ class Circle {
         }
     }
 
-  // Pattern 1: U-Shape Symbols
-  // Represents a person sitting in Indigenous art
+    // Pattern 1: U-Shape Symbols
+    // Represents a person sitting in Indigenous art
     drawMiddleUshapePattern(col) {
         noFill();
         stroke(col);
@@ -369,14 +370,14 @@ class Circle {
         }
     }
 
-  // Pattern 2: Solid Rings
+    // Pattern 2: Solid Rings
     drawMiddleSolidRings(col) {
         this.drawHandDrawnCircle(this.r * 0.45, col, null, 0);
         let col2 = random(patternPalette);
         this.drawHandDrawnCircle(this.r * 0.3, col2, null, 0);
     }
 
-  // Pattern 3: Concentric Wobbly Lines
+    // Pattern 3: Concentric Wobbly Lines
     drawMiddleConcentricIrregularLines(col) {
         noFill();
         stroke(col);
@@ -397,7 +398,7 @@ class Circle {
         }
     }
 
-  // ================= INNER PATTERNS =================
+    // ================= INNER PATTERNS =================
     displayInnerPattern() {
         this.drawHandDrawnCircle(this.r * 0.25, random(circleBasePalette), null, 0);
         let patCol = random(patternPalette);
