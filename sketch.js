@@ -30,6 +30,7 @@ function windowResized() {
     resizeCanvas(size, size);
     draw();
 }
+
 // --- Layout generation ---
 function createFixedLayout() {
     circles = [];  //initialise
@@ -110,7 +111,7 @@ function drawBackgroundDots() {
           fill(255, 255, 255, alpha); // Pure white, varying opacity
           ellipse(x, y, dotSize);
     }
-  pop();
+    pop();
 }
 
 // ======================================================================
