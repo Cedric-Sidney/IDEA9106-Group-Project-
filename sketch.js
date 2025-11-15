@@ -9,65 +9,10 @@
 
 let globalBgColor;       // Background colour
 let circleBasePalette;   // Base colours for the circles (Deep Earth tones)
-let dotPalette;          // Colours for patterns/details (High contrast/Bright)
-let circles = [];        // Stores all circle objects
-let connectedNodes = []; // Stores the circles selected as connection nodes (key "VIP" nodes)
-
-function setup() {
-  // Use min dimension to ensure square aspect ratio fits screen
-  let size = min(windowWidth, windowHeight);
-  createCanvas(size, size);
-  
-  // NOTE: pixelDensity() was not covered in class. 
-  // It comes from the p5.js reference: https://p5js.org/reference/p5/pixelDensity/
-  // It increases the device pixel ratio so the artwork renders more sharply on high-DPI/Retina screens.
-  pixelDensity(2); 
-
-  // --- 1. Colour palette system (Aboriginal-inspired style) ---
-  globalBgColor = color(30, 20, 15); // Deep, dark earth background
-
-  circleBasePalette = [
-    color(90, 40, 20),   //  (Red Ochre)
-    color(60, 30, 15),   //  (Deep Earth)
-    color(40, 45, 35),   //  (Bush Green)
-    color(110, 60, 30),  //  (Burnt Orange)
-    color(20, 20, 20)    //  (Charcoal)
-  ];
-
-  dotPalette = [
-    color(255, 255, 255), //  (Ceremony White)
-    color(255, 240, 200), //  (Cream)
-    color(255, 215, 0),   //  (Sun Yellow)
-    color(255, 140, 80),  //  (Bright Ochre)
-    color(160, 180, 140), //  (Sage)
-    color(200, 200, 210)  //  (Ash)
-  ];
-}
-
-function draw() {
-  background(globalBgColor); 
-
-  // 1. Background Texture
-  // Draw random white dots that fill the canvas to create atmosphere
-  drawBackgroundDots();
-
-  // 2. Layout Generation
-  // Calculate positions for all circles based on a fixed geometric grid
-  createFixedLayout();
-
-  // 3. Connection Layer (Songlines)
-  // Draw wide network lines between selected circle centres (VIP nodes)
-  // Rendered BEFORE circles so lines appear to go *under* them
-  drawNetworkLines();
-
-  // 4. Main Circle Layer
-  // Iterate through all circle objects and call their display method
-  for (let c of circles) {
-    c.display();
-  }
-  
-  noLoop(); // Static artwork, stop looping
-}
+let patternPalette;          // Colours for patterns/details (High contrast/Bright)
+let circles;        // Stores all circle objects, although this step is not neccessary, 
+// it is useful for individual assignments as we may operate on individual circles.
+let connectedNodes; // Stores the circles selected as connection nodes (key "VIP" nodes)
 
 function windowResized() {
   let size = min(windowWidth, windowHeight);
@@ -86,7 +31,7 @@ function windowResized() {
 
 // --- Layout generation ---
 function createFixedLayout() {
-  circles = []; 
+  circles = [];  //initialise
   connectedNodes = []; 
   
   // Base radius unit relative to canvas width
@@ -95,25 +40,21 @@ function createFixedLayout() {
   // Add circles along specific diagonal coordinates
   // Parameters: count, startX, startY, stepX, stepY, radius
   addCirclesOnLine(5, width / 7.1, height / 7.1, width / 4.8, height / 4.8, r);
-  addCirclesOnLine(4, width / 2, (height * 2) / 20, width / 4.8, height / 4.8, r);
-  addCirclesOnLine(2, (width * 4) / 5, 0, width / 4.8, height / 4.8, r);
-  addCirclesOnLine(4, width / 20, height / 2.2, width / 4.8, height / 4.8, r);
-  addCirclesOnLine(2, 0, (height * 8) / 10, width / 4.8, height / 4.8, r);
+  addCirclesOnLine(5, width / 2, (height * 2) / 20, width / 4.8, height / 4.8, r);
+  addCirclesOnLine(5, (width * 4) / 5, 0, width / 4.8, height / 4.8, r);
+  addCirclesOnLine(5, width / 20, height / 2.2, width / 4.8, height / 4.8, r);
+  addCirclesOnLine(5, 0, (height * 8) / 10, width / 4.8, height / 4.8, r);
 }
 
 function addCirclesOnLine(count, startX, startY, stepX, stepY, r) {
   for (let i = 0; i < count; i++) {
     let x = startX + stepX * i;
     let y = startY + stepY * i;
-    
-    // Boundary check to ensure circles are somewhat within view
-    if (x > -r * 2 && x < width + r * 2 && y > -r * 2 && y < height + r * 2) {
-        let c = new Circle(x, y, r);
-        circles.push(c);
-        // Randomly select 70% of circles to be "nodes" for connections
-        if (random(1) < 0.7) {
-            connectedNodes.push(c);
-        }
+    let c = new Circle(x, y, r);
+    circles.push(c);
+    // Randomly select 70% of circles to be "nodes" for connections
+    if (random(1) < 0.7) {
+    connectedNodes.push(c);
     }
   }
 }
@@ -132,8 +73,8 @@ function drawNetworkLines() {
     for (let j = i + 1; j < connectedNodes.length; j++) {
         let c1 = connectedNodes[i];
         let c2 = connectedNodes[j];
-        let d = dist(c1.x, c1.y, c2.x, c2.y);
-        // Only connect nodes that are within a certain distance
+        let d = dist(c1.x, c1.y, c2.x, c2.y); // Calculate distance between two nodes
+        // Only connect nodes that are within a certain distance, so that circles next to each other are connected
         if (d < width / 2.8) { 
             line(c1.x, c1.y, c2.x, c2.y); 
         }
@@ -300,7 +241,7 @@ class Circle {
   displayOuterPattern() {
     let baseColor = random(circleBasePalette);
     this.drawHandDrawnCircle(this.r, baseColor, color(0, 50), 2);
-    let patCol = random(dotPalette);
+    let patCol = random(patternPalette);
 
     switch (this.outerPatternType) {
       case 0: this.drawOuterDotsPattern(patCol); break;
@@ -384,7 +325,7 @@ class Circle {
   displayMiddlePattern() {
     let midBgColor = random(circleBasePalette);
     this.drawHandDrawnCircle(this.r * 0.55, midBgColor, null, 0);
-    let patCol = random(dotPalette);
+    let patCol = random(patternPalette);
 
     switch (this.middlePatternType) {
       case 0: this.drawMiddleConcentricDotsPattern(patCol); break;
@@ -429,7 +370,7 @@ class Circle {
   // Pattern 2: Solid Rings
   drawMiddleSolidRings(col) {
     this.drawHandDrawnCircle(this.r * 0.45, col, null, 0);
-    let col2 = random(dotPalette);
+    let col2 = random(patternPalette);
     this.drawHandDrawnCircle(this.r * 0.3, col2, null, 0);
   }
 
@@ -457,7 +398,7 @@ class Circle {
   // ================= INNER PATTERNS =================
   displayInnerPattern() {
     this.drawHandDrawnCircle(this.r * 0.25, random(circleBasePalette), null, 0);
-    let patCol = random(dotPalette);
+    let patCol = random(patternPalette);
     
     if (this.innerPatternType === 0) {
        // Simple large blob (Center Eye)
@@ -478,4 +419,60 @@ class Circle {
        endShape();
     }
   }
+}
+
+function setup() {
+  // Use min dimension to ensure square aspect ratio fits screen
+  let size = min(windowWidth, windowHeight);
+  createCanvas(size, size);
+  
+  // NOTE: pixelDensity() was not covered in class. 
+  // It comes from the p5.js reference: https://p5js.org/reference/p5/pixelDensity/
+  // It increases the device pixel ratio so the artwork renders more sharply on high-DPI/Retina screens.
+  pixelDensity(2); 
+
+  // --- 1. Colour palette system (Aboriginal-inspired style) ---
+  globalBgColor = color(30, 20, 15); // Deep, dark earth background
+
+  circleBasePalette = [
+    color(90, 40, 20),   //  (Red Ochre)
+    color(60, 30, 15),   //  (Deep Earth)
+    color(40, 45, 35),   //  (Bush Green)
+    color(110, 60, 30),  //  (Burnt Orange)
+    color(20, 20, 20)    //  (Charcoal)
+  ];
+
+  patternPalette = [
+    color(255, 255, 255), //  (Ceremony White)
+    color(255, 240, 200), //  (Cream)
+    color(255, 215, 0),   //  (Sun Yellow)
+    color(255, 140, 80),  //  (Bright Ochre)
+    color(160, 180, 140), //  (Sage)
+    color(200, 200, 210)  //  (Ash)
+  ];
+}
+
+function draw() {
+  background(globalBgColor); 
+
+  // 1. Background Texture
+  // Draw random white dots that fill the canvas to create atmosphere
+  drawBackgroundDots();
+
+  // 2. Layout Generation
+  // Calculate positions for all circles based on a fixed geometric grid
+  createFixedLayout();
+
+  // 3. Connection Layer (Songlines)
+  // Draw wide network lines between selected circle centres (VIP nodes)
+  // Rendered BEFORE circles so lines appear to go *under* them
+  drawNetworkLines();
+
+  // 4. Main Circle Layer
+  // Iterate through all circle objects and call their display method
+  for (let c of circles) {
+    c.display();
+  }
+  
+  noLoop(); // Static artwork, stop looping
 }
