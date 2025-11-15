@@ -89,9 +89,10 @@ function drawNetworkLines() {
 
 // --- Background texture: dense random scattered white dots ---
 /*
- * This background texture uses probabilistic dot density to distribute thousands of 
- * semi-transparent white dots across the canvas. 
+    This background texture uses probabilistic dot density to distribute thousands of 
+    semi-transparent white dots across the canvas. 
  */
+
 function drawBackgroundDots() {
     push();
     noStroke();
@@ -122,11 +123,11 @@ function drawBackgroundDots() {
 // pattern functions.
 
 class Circle {
-  /*
-     Each Circle object randomly selects pattern types for its outer, middle,
-     and inner layers. This modular structure expands on OOP techniques,
-     enabling controlled variation through generative rules.
-   */
+/*
+    Each Circle object randomly selects pattern types for its outer, middle,
+    and inner layers. This modular structure expands on OOP techniques,
+    enabling controlled variation through generative rules.
+*/
     constructor(x, y, r) {
         this.x = x;
         this.y = y;
@@ -140,8 +141,8 @@ class Circle {
         this.irregularity = 0.02; 
     }
 
-  // --- Main Display Method ---
-  // Uses push/pop/translate to simplify drawing coordinates (relative to center 0,0)
+    // --- Main Display Method ---
+    // Uses push/pop/translate to simplify drawing coordinates (relative to center 0,0)
     display() {
         push(); 
         
@@ -160,7 +161,7 @@ class Circle {
         pop(); // Restore coordinate system
     }
 
-  // --- Drawing Utilities (Helpers) ---
+    // --- Drawing Utilities (Helpers) ---
     /*
         Many of the custom shapes in this sketch use beginShape() together with
         curveVertex() to build smooth, organic outlines instead of perfect geometric primitives. 
@@ -288,7 +289,7 @@ class Circle {
         }
     }
 
-     // Pattern 2: Striped Ring
+    // Pattern 2: Striped Ring
     drawOuterStripedRingPattern(col) {
         noFill();
         stroke(col);
