@@ -196,7 +196,7 @@ class Circle {
         pop();
     }
 
-  // larger version of drawIrregularBlob() used to draw big circular motifs
+    // larger version of drawIrregularBlob() used to draw big circular motifs
     drawHandDrawnCircle(r, fillCol, strokeCol, strokeW) {
     // draws a large base circle with a slightly jittered radius, 
     // beginShape() + curveVertex(): described above to create an organic, hand-drawn outline.
@@ -387,9 +387,10 @@ class Circle {
             rotate(angle); 
             translate(r, 0); 
             rotate(PI/2); 
-            arc(0, 0, this.r*0.15, this.r*0.15, 0, PI); 
-            // An arc from 0 to PI (180 degrees) creates a U-shape.
+            // arc() draws a semicircle from angle 0 to PI (180 degrees), creating a U-shape. 
+            // from the official p5.js reference: https://p5js.org/reference/p5/arc/
             // The size of the arc is relative to the main circle's radius.
+            arc(0, 0, this.r*0.15, this.r*0.15, 0, PI); 
             pop();
         }
     }
@@ -453,7 +454,7 @@ function setup() {
     let size = min(windowWidth, windowHeight);
     createCanvas(size, size);
   
-    // NOTE: pixelDensity() was not covered in class. 
+    // pixelDensity() was not covered in class. 
     // It comes from the p5.js reference: https://p5js.org/reference/p5/pixelDensity/
     // It increases the device pixel ratio so the artwork renders more sharply on high-DPI/Retina screens.
     pixelDensity(2); 
