@@ -15,9 +15,9 @@ let circles;        // Stores all circle objects, although this step is not necc
 let connectedNodes; // Stores the circles selected as connection nodes (key "VIP" nodes)
 
 function windowResized() {
-  let size = min(windowWidth, windowHeight);
-  resizeCanvas(size, size);
-  draw();
+    let size = min(windowWidth, windowHeight);
+    resizeCanvas(size, size);
+    draw();
 }
 
 // =========================================================================
@@ -31,56 +31,60 @@ function windowResized() {
 
 // --- Layout generation ---
 function createFixedLayout() {
-  circles = [];  //initialise
-  connectedNodes = []; 
+    circles = [];  //initialise
+    connectedNodes = []; 
   
-  // Base radius unit relative to canvas width
-  let r = width / 8; 
+    // Base radius unit relative to canvas width
+    let r = width / 8; 
 
-  // Add circles along specific diagonal coordinates
-  // Parameters: count, startX, startY, stepX, stepY, radius
-  addCirclesOnLine(5, width / 7.1, height / 7.1, width / 4.8, height / 4.8, r);
-  addCirclesOnLine(5, width / 2, (height * 2) / 20, width / 4.8, height / 4.8, r);
-  addCirclesOnLine(5, (width * 4) / 5, 0, width / 4.8, height / 4.8, r);
-  addCirclesOnLine(5, width / 20, height / 2.2, width / 4.8, height / 4.8, r);
-  addCirclesOnLine(5, 0, (height * 8) / 10, width / 4.8, height / 4.8, r);
+    // Add circles along specific diagonal coordinates
+    // Parameters: count, startX, startY, stepX, stepY, radius
+    addCirclesOnLine(5, width / 7.1, height / 7.1, width / 4.8, height / 4.8, r);
+    addCirclesOnLine(5, width / 2, (height * 2) / 20, width / 4.8, height / 4.8, r);
+    addCirclesOnLine(5, (width * 4) / 5, 0, width / 4.8, height / 4.8, r);
+    addCirclesOnLine(5, width / 20, height / 2.2, width / 4.8, height / 4.8, r);
+    addCirclesOnLine(5, 0, (height * 8) / 10, width / 4.8, height / 4.8, r);
 }
 
 function addCirclesOnLine(count, startX, startY, stepX, stepY, r) {
-  for (let i = 0; i < count; i++) {
-    let x = startX + stepX * i;
-    let y = startY + stepY * i;
-    let c = new Circle(x, y, r);
-    circles.push(c);
-    // Randomly select 70% of circles to be "nodes" for connections
-    if (random(1) < 0.7) {
-    connectedNodes.push(c);
+    for (let i = 0; i < count; i++) {
+        let x = startX + stepX * i;
+        let y = startY + stepY * i;
+        let c = new Circle(x, y, r);
+        circles.push(c);
+        // Randomly select 70% of circles to be "nodes" for connections
+        if (random(1) < 0.7) {
+            connectedNodes.push(c);
+        }
     }
-  }
 }
 
 // --- Draw connecting lines ---
 function drawNetworkLines() {
-  let linkColor = color(240, 230, 200, 180); // Creamy color, semi-transparent
+    let linkColor = color(240, 230, 200, 180); // Creamy color, semi-transparent
 
-  // Use push/pop to isolate style settings for lines
-  push(); 
-  stroke(linkColor);
-  strokeWeight(10); // Fixed wide width
-  strokeCap(ROUND); // Rounded ends for natural look
+    // Use push/pop to isolate style settings for lines
+    push(); 
+    stroke(linkColor);
+    strokeWeight(10); // Fixed wide width
+    // strokeCap(ROUND) sets rounded line endings for smoother, organic-looking connectors.
+    // From the p5.js reference: https://p5js.org/reference/p5/strokeCap/
+    strokeCap(ROUND); // Rounded ends for natural look
 
-  for (let i = 0; i < connectedNodes.length; i++) {
-    for (let j = i + 1; j < connectedNodes.length; j++) {
-        let c1 = connectedNodes[i];
-        let c2 = connectedNodes[j];
-        let d = dist(c1.x, c1.y, c2.x, c2.y); // Calculate distance between two nodes
-        // Only connect nodes that are within a certain distance, so that circles next to each other are connected
-        if (d < width / 2.8) { 
-            line(c1.x, c1.y, c2.x, c2.y); 
-        }
+    for (let i = 0; i < connectedNodes.length; i++) {
+        for (let j = i + 1; j < connectedNodes.length; j++) {
+            let c1 = connectedNodes[i];
+            let c2 = connectedNodes[j];
+            // Compute Euclidean distance between two circle centers.
+            // dist() is from the p5.js reference: https://p5js.org/reference/p5/dist/
+            let d = dist(c1.x, c1.y, c2.x, c2.y); // Calculate distance between two nodes
+            // Only connect nodes that are within a certain distance, so that circles next to each other are connected
+            if (d < width / 2.8) { 
+                line(c1.x, c1.y, c2.x, c2.y); 
+            }
+        }   
     }
-  }
-  pop();
+    pop();
 }
 
 // --- Background texture: dense random scattered white dots ---
@@ -89,22 +93,21 @@ function drawNetworkLines() {
  * semi-transparent white dots across the canvas. 
  */
 function drawBackgroundDots() {
-  push();
-  noStroke();
+    push();
+    noStroke();
   
-  let density = 0.004; // Controls how many dots per pixel area.
-  let numDots = floor(width * height * density); // Calculate the total number of dots based on canvas area and desired density.
+    let density = 0.004; // Controls how many dots per pixel area.
+    let numDots = floor(width * height * density); // Calculate the total number of dots based on canvas area and desired density.
 
-  for (let i = 0; i < numDots; i++) {
-    let x = random(width); // Random x position within canvas
-    let y = random(height); // Random y position within canvas
+    for (let i = 0; i < numDots; i++) {
+      let x = random(width); // Random x position within canvas
+      let y = random(height); // Random y position within canvas
     
-    let dotSize = random(width * 0.002, width * 0.005);// Set dot size relative to canvas width for responsiveness.
-    let alpha = random(100, 200);  // We want the dots have different opacity, so they look like shining stars.
-    
-    fill(255, 255, 255, alpha); // Pure white, varying opacity
-    ellipse(x, y, dotSize);
-  }
+      let dotSize = random(width * 0.002, width * 0.005);// Set dot size relative to canvas width for responsiveness.
+      let alpha = random(100, 200);  // We want the dots have different opacity, so they look like shining stars.
+          fill(255, 255, 255, alpha); // Pure white, varying opacity
+          ellipse(x, y, dotSize);
+    }
   pop();
 }
 
@@ -124,38 +127,38 @@ class Circle {
      and inner layers. This modular structure expands on OOP techniques,
      enabling controlled variation through generative rules.
    */
-  constructor(x, y, r) {
-    this.x = x;
-    this.y = y;
-    this.r = r; 
+    constructor(x, y, r) {
+        this.x = x;
+        this.y = y;
+        this.r = r; 
 
-    // Randomly assign pattern types
-    this.outerPatternType = floor(random(4)); 
-    this.middlePatternType = floor(random(4)); 
-    this.innerPatternType = floor(random(2)); 
+        // Randomly assign pattern types
+        this.outerPatternType = floor(random(4)); 
+        this.middlePatternType = floor(random(4)); 
+        this.innerPatternType = floor(random(2)); 
 
-    this.irregularity = 0.02; 
-  }
+        this.irregularity = 0.02; 
+    }
 
   // --- Main Display Method ---
   // Uses push/pop/translate to simplify drawing coordinates (relative to center 0,0)
-  display() {
-    push(); 
-    
-    // 1. Move origin to the circle's center
-    translate(this.x, this.y); 
-    
-    // 2. Draw Buffer Circle (Mask)
-    // Cleans up the background behind the circle
-    this.drawHandDrawnCircle(this.r * 1.05, globalBgColor, null, 0);
+    display() {
+        push(); 
+        
+        // 1. Move origin to the circle's center
+        translate(this.x, this.y); 
+        
+        // 2. Draw Buffer Circle (Mask)
+        // Cleans up the background behind the circle
+        this.drawHandDrawnCircle(this.r * 1.05, globalBgColor, null, 0);
 
-    // 3. Draw Patterns
-    this.displayOuterPattern();  
-    this.displayMiddlePattern(); 
-    this.displayInnerPattern();  
+        // 3. Draw Patterns
+        this.displayOuterPattern();  
+        this.displayMiddlePattern(); 
+        this.displayInnerPattern();  
 
-    pop(); // Restore coordinate system
-  }
+        pop(); // Restore coordinate system
+    }
 
   // --- Drawing Utilities (Helpers) ---
     /*
@@ -168,311 +171,310 @@ class Circle {
         curveVertex(), we simulate hand-drawn contours and irregular blobs.
     */
 
-  drawIrregularBlob(rOffset, angle, size, col) {
+    drawIrregularBlob(rOffset, angle, size, col) {
     //beginShape() + curveVertex()： draw a small, irregular dot shape at a given radial offset and angle.
     // Calculate position based on polar coordinates
-    let x = cos(angle) * rOffset;
-    let y = sin(angle) * rOffset;
+        let x = cos(angle) * rOffset;
+        let y = sin(angle) * rOffset;
 
-    fill(col);
-    noStroke();
-    
-    push();
-    translate(x, y); 
-    rotate(random(TWO_PI)); // Random rotation for variety
-    beginShape();
-    let points = 8;
-    for (let i = 0; i < points; i++) {
-      let a = TWO_PI / points * i;
-      // Jitter the radius of the dot itself
-      let r = size * 0.5 * random(0.85, 1.15); 
-      curveVertex(cos(a) * r, sin(a) * r); 
+        fill(col);
+        noStroke();
+        
+        push();
+        translate(x, y); 
+        rotate(random(TWO_PI)); // Random rotation for variety
+        beginShape();
+        let points = 8; 
+        for (let i = 0; i < points; i++) {
+            let a = TWO_PI / points * i;
+            // Jitter the radius of the dot itself
+            let r = size * 0.5 * random(0.85, 1.15); 
+            curveVertex(cos(a) * r, sin(a) * r); 
+        }
+        endShape(CLOSE);
+        pop();
     }
-    endShape(CLOSE);
-    pop();
-  }
 
   
-  drawHandDrawnCircle(r, fillCol, strokeCol, strokeW) {
+    drawHandDrawnCircle(r, fillCol, strokeCol, strokeW) {
     // draws a large base circle with a slightly jittered radius, 
     // beginShape() + curveVertex(): described above to create an organic, hand-drawn outline.
-    if (fillCol) fill(fillCol); else noFill();
-    if (strokeCol) stroke(strokeCol); else noStroke();
-    if (strokeW) strokeWeight(strokeW);
+        if (fillCol) fill(fillCol); else noFill();
+        if (strokeCol) stroke(strokeCol); else noStroke();
+        if (strokeW) strokeWeight(strokeW);
 
-    beginShape();
-    let points = 50; 
-    for (let i = 0; i <= points; i++) {
-        let angle = (TWO_PI / points) * i;
-        // Jitter the main radius
-        let jitter = random(-r * 0.01, r * 0.01); 
-        let radius = r + jitter;
-        curveVertex(cos(angle) * radius, sin(angle) * radius);
-    }
-    endShape(CLOSE);
-  }
-
- 
-  drawHandDrawnEllipse(rOffset, angle, w, h, rotation, col) {
-    // uses the same beginShape() + curveVertex() approach to construct a wobbly ellipse at a given offset. 
-    // The radii along the ellipse are randomly varied so the shape looks hand-drawn rather than
-    // mathematically perfect.
-    let x = cos(angle) * rOffset;
-    let y = sin(angle) * rOffset;
-
-    fill(col);
-    noStroke();
-    push();
-    translate(x, y);
-    rotate(rotation);
-    beginShape();
-    let points = 12; 
-    for (let i = 0; i <= points; i++) {
-      let a = (TWO_PI / points) * i;
-      let rx = (w / 2) + random(-w * 0.2, w * 0.2); 
-      let ry = (h / 2) + random(-h * 0.2, h * 0.2);
-      curveVertex(rx * cos(a), ry * sin(a));
-    }
-    endShape(CLOSE);
-    pop(); 
-  }
-
-  // ================= OUTER PATTERNS =================
-  displayOuterPattern() {
-    let baseColor = random(circleBasePalette);
-    this.drawHandDrawnCircle(this.r, baseColor, color(0, 50), 2);
-    let patCol = random(patternPalette);
-
-    switch (this.outerPatternType) {
-      case 0: this.drawOuterDotsPattern(patCol); break;
-      case 1: this.drawOuterRadiatingLinesPattern(patCol); break;
-      case 2: this.drawOuterStripedRingPattern(patCol); break;
-      case 3: this.drawOuterRadialDashPattern(patCol); break; 
-    }
-  }
-
-  // Pattern 0: Irregular Dots Ring
-  drawOuterDotsPattern(col) {
-    let dotSize = this.r * 0.07; 
-    let dotSpacing = this.r * 0.09; 
-    for (let radius = this.r * 0.65; radius < this.r * 0.95; radius += dotSpacing) { 
-      let count = floor((TWO_PI * radius) / dotSpacing);
-      for (let i = 0; i < count; i++) {
-        let angle = (TWO_PI / count) * i;
-        this.drawIrregularBlob(radius, angle, dotSize, col);
-      }
-    }
-  }
-
-  // Pattern 1: Radiating Lines (Sunburst)
-  // Uses rotate() to simplify drawing lines radiating from center
-  drawOuterRadiatingLinesPattern(col) {
-    let numLines = 40;
-    stroke(col);
-    strokeWeight(this.r * 0.015);
-    strokeCap(ROUND);
-    
-    for (let i = 0; i < numLines; i++) {
-      let angle = (TWO_PI / numLines) * i + random(-0.05, 0.05);
-      
-      push(); 
-      rotate(angle); // Rotate context
-      // Draw line along the X-axis
-      line(this.r * 0.6, 0, this.r * 0.95, 0);
-      // Draw dot at the tip
-      this.drawIrregularBlob(this.r * 0.95, 0, this.r * 0.03, col); 
-      pop(); 
-    }
-  }
-
-  // Pattern 2: Striped Ring
-  drawOuterStripedRingPattern(col) {
-    noFill();
-    stroke(col);
-    let baseStrokeWeight = this.r * 0.025; 
-    let numRings = 5; 
-    for (let i = 0; i < numRings; i++) {
-        let radius = map(i, 0, numRings - 1, this.r * 0.65, this.r * 0.9);
-        strokeWeight(baseStrokeWeight * random(0.8, 1.2)); 
-        this.drawHandDrawnCircle(radius, null, col, null);
-    }
-  }
-
-  // Pattern 3: Radial Dash (Sine Wave Spring)
-  // Uses sin() to create a continuous wavy circumference
- // This pattern also relies on beginShape() + curveVertex() to render the wavy outer contour as a continuous organic loop.
-  drawOuterRadialDashPattern(col) {
-    noFill(); 
-    stroke(col); 
-    strokeWeight(this.r * 0.025);
-    let baseRadius = this.r * 0.73;
-    let waveHeight = baseRadius * 0.30;
-    let waveFrequency = 60;
-    let totalPoints = 240;
-    
-    beginShape();
-    for (let j = 0; j <= totalPoints; j++) {
-      let angle = (TWO_PI / totalPoints) * j;
-      let offset = sin(angle * waveFrequency) * waveHeight;
-      let finalRadius = baseRadius + offset;
-      finalRadius += random(-this.r * 0.005, this.r * 0.005);
-      curveVertex(cos(angle) * finalRadius, sin(angle) * finalRadius);
-    }
-    endShape(CLOSE); 
-  }
-
-  // ================= MIDDLE PATTERNS =================
-  displayMiddlePattern() {
-    let midBgColor = random(circleBasePalette);
-    this.drawHandDrawnCircle(this.r * 0.55, midBgColor, null, 0);
-    let patCol = random(patternPalette);
-
-    switch (this.middlePatternType) {
-      case 0: this.drawMiddleConcentricDotsPattern(patCol); break;
-      case 1: this.drawMiddleUshapePattern(patCol); break;
-      case 2: this.drawMiddleSolidRings(patCol); break;
-      case 3: this.drawMiddleConcentricIrregularLines(patCol); break; 
-    }
-  }
-
-  // Pattern 0: Concentric Dots
-  drawMiddleConcentricDotsPattern(col) {
-    let dotSize = this.r * 0.04;
-    for (let r = this.r * 0.2; r < this.r * 0.5; r += dotSize * 1.5) {
-      let count = floor((TWO_PI * r) / (dotSize * 1.5));
-      for (let i = 0; i < count; i++) {
-        let angle = (TWO_PI / count) * i;
-        this.drawIrregularBlob(r, angle, dotSize, col);
-      }
-    }
-  }
-
-  // Pattern 1: U-Shape Symbols
-  // Represents a person sitting in Indigenous art
-  drawMiddleUshapePattern(col) {
-    noFill();
-    stroke(col);
-    strokeWeight(this.r * 0.02);
-    let count = 8;
-    let r = this.r * 0.35;
-    
-    for (let i = 0; i < count; i++) {
-      let angle = (TWO_PI / count) * i;
-      push();
-      rotate(angle); 
-      translate(r, 0); 
-      rotate(PI/2); 
-      arc(0, 0, this.r*0.15, this.r*0.15, 0, PI); 
-      pop();
-    }
-  }
-
-  // Pattern 2: Solid Rings
-  drawMiddleSolidRings(col) {
-    this.drawHandDrawnCircle(this.r * 0.45, col, null, 0);
-    let col2 = random(patternPalette);
-    this.drawHandDrawnCircle(this.r * 0.3, col2, null, 0);
-  }
-
-  // Pattern 3: Concentric Wobbly Lines
-  drawMiddleConcentricIrregularLines(col) {
-    noFill();
-    stroke(col);
-    let baseStrokeWeight = this.r * 0.01; 
-    let numRings = 7; 
-    for (let j = 0; j < numRings; j++) {
-        let currentRadius = map(j, 0, numRings - 1, this.r * 0.2, this.r * 0.5);
-        strokeWeight(baseStrokeWeight * random(0.8, 1.2)); 
         beginShape();
-        let points = 25; 
+        let points = 50; 
         for (let i = 0; i <= points; i++) {
             let angle = (TWO_PI / points) * i;
-            let jitter = random(-this.r * 0.025, this.r * 0.025); 
-            let radius = currentRadius + jitter;
+            // Jitter the main radius
+            let jitter = random(-r * 0.01, r * 0.01); 
+            let radius = r + jitter;
             curveVertex(cos(angle) * radius, sin(angle) * radius);
         }
         endShape(CLOSE);
     }
+
+ 
+    drawHandDrawnEllipse(rOffset, angle, w, h, rotation, col) {
+    // uses the same beginShape() + curveVertex() approach to construct a wobbly ellipse at a given offset. 
+    // The radii along the ellipse are randomly varied so the shape looks hand-drawn rather than
+    // mathematically perfect.
+        let x = cos(angle) * rOffset;
+        let y = sin(angle) * rOffset;
+
+        fill(col);
+        noStroke();
+        push();
+        translate(x, y);
+        rotate(rotation);
+        beginShape();
+        let points = 12; 
+        for (let i = 0; i <= points; i++) {
+        let a = (TWO_PI / points) * i;
+        let rx = (w / 2) + random(-w * 0.2, w * 0.2); 
+        let ry = (h / 2) + random(-h * 0.2, h * 0.2);
+        curveVertex(rx * cos(a), ry * sin(a));
+        }
+        endShape(CLOSE);
+        pop(); 
   }
 
-  // ================= INNER PATTERNS =================
-  displayInnerPattern() {
-    this.drawHandDrawnCircle(this.r * 0.25, random(circleBasePalette), null, 0);
-    let patCol = random(patternPalette);
-    
-    if (this.innerPatternType === 0) {
-       // Simple large blob (Center Eye)
-       this.drawIrregularBlob(0, 0, this.r * 0.15, patCol); // 0,0 is center
-    } else {
-       // Spiral Line
-       noFill();
-       stroke(patCol);
-       strokeWeight(this.r * 0.015);
-        // Here we again use beginShape() + curveVertex() to build a spiral-like
-       // path, applying the same hand-drawn curve technique to the inner core.
-       beginShape();
-       for (let i = 0; i < 50; i++) {
-         let r = map(i, 0, 50, 0, this.r * 0.2);
-         let angle = i * 0.4;
-         curveVertex(cos(angle)*r, sin(angle)*r);
-       }
-       endShape();
+  // ================= OUTER PATTERNS =================
+    displayOuterPattern() {
+        let baseColor = random(circleBasePalette);
+        this.drawHandDrawnCircle(this.r, baseColor, color(0, 50), 2);
+        let patCol = random(patternPalette);
+
+        switch (this.outerPatternType) {
+            case 0: this.drawOuterDotsPattern(patCol); break;
+            case 1: this.drawOuterRadiatingLinesPattern(patCol); break;
+            case 2: this.drawOuterStripedRingPattern(patCol); break;
+            case 3: this.drawOuterRadialDashPattern(patCol); break; 
+        }
     }
-  }
+
+  // Pattern 0: Irregular Dots Ring
+    drawOuterDotsPattern(col) {
+        let dotSize = this.r * 0.07; 
+        let dotSpacing = this.r * 0.09; 
+        for (let radius = this.r * 0.65; radius < this.r * 0.95; radius += dotSpacing) { 
+            let count = floor((TWO_PI * radius) / dotSpacing);
+            for (let i = 0; i < count; i++) {
+                let angle = (TWO_PI / count) * i;
+                this.drawIrregularBlob(radius, angle, dotSize, col);
+            }
+        }
+    }
+
+  // Pattern 1: Radiating Lines (Sunburst)
+  // Uses rotate() to simplify drawing lines radiating from center
+    drawOuterRadiatingLinesPattern(col) {
+        let numLines = 40;
+        stroke(col);
+        strokeWeight(this.r * 0.015);
+        strokeCap(ROUND);
+        
+        for (let i = 0; i < numLines; i++) {
+            let angle = (TWO_PI / numLines) * i + random(-0.05, 0.05);
+            
+            push(); 
+            rotate(angle); // Rotate context
+            // Draw line along the X-axis
+            line(this.r * 0.6, 0, this.r * 0.95, 0);
+            // Draw dot at the tip
+            this.drawIrregularBlob(this.r * 0.95, 0, this.r * 0.03, col); 
+            pop(); 
+        }
+    }
+
+  // Pattern 2: Striped Ring
+    drawOuterStripedRingPattern(col) {
+        noFill();
+        stroke(col);
+        let baseStrokeWeight = this.r * 0.025; 
+        let numRings = 5; 
+        for (let i = 0; i < numRings; i++) {
+            let radius = map(i, 0, numRings - 1, this.r * 0.65, this.r * 0.9);
+            strokeWeight(baseStrokeWeight * random(0.8, 1.2)); 
+            this.drawHandDrawnCircle(radius, null, col, null);
+        }
+    }
+// Pattern 3: Radial Dash (Sine Wave Spring)
+  // Uses sin() to create a continuous wavy circumference
+ // This pattern also relies on beginShape() + curveVertex() to render the wavy outer contour as a continuous organic loop.
+    drawOuterRadialDashPattern(col) {
+        noFill(); 
+        stroke(col); 
+        strokeWeight(this.r * 0.025);
+        let baseRadius = this.r * 0.73;
+        let waveHeight = baseRadius * 0.30;
+        let waveFrequency = 60;
+        let totalPoints = 240;
+        
+        beginShape();
+        for (let j = 0; j <= totalPoints; j++) {
+            let angle = (TWO_PI / totalPoints) * j;
+            let offset = sin(angle * waveFrequency) * waveHeight;
+            let finalRadius = baseRadius + offset;
+            finalRadius += random(-this.r * 0.005, this.r * 0.005);
+            curveVertex(cos(angle) * finalRadius, sin(angle) * finalRadius);
+        }
+        endShape(CLOSE); 
+    }
+
+  // ================= MIDDLE PATTERNS =================
+    displayMiddlePattern() {
+        let midBgColor = random(circleBasePalette);
+        this.drawHandDrawnCircle(this.r * 0.55, midBgColor, null, 0);
+        let patCol = random(patternPalette);
+
+        switch (this.middlePatternType) {
+            case 0: this.drawMiddleConcentricDotsPattern(patCol); break;
+            case 1: this.drawMiddleUshapePattern(patCol); break;
+            case 2: this.drawMiddleSolidRings(patCol); break;
+            case 3: this.drawMiddleConcentricIrregularLines(patCol); break; 
+        }
+    }
+
+  // Pattern 0: Concentric Dots
+    drawMiddleConcentricDotsPattern(col) {
+        let dotSize = this.r * 0.04;
+        for (let r = this.r * 0.2; r < this.r * 0.5; r += dotSize * 1.5) {
+            let count = floor((TWO_PI * r) / (dotSize * 1.5));
+            for (let i = 0; i < count; i++) {
+                let angle = (TWO_PI / count) * i;
+                this.drawIrregularBlob(r, angle, dotSize, col);
+            }
+        }
+    }
+
+  // Pattern 1: U-Shape Symbols
+  // Represents a person sitting in Indigenous art
+    drawMiddleUshapePattern(col) {
+        noFill();
+        stroke(col);
+        strokeWeight(this.r * 0.02);
+        let count = 8;
+        let r = this.r * 0.35;
+    
+        for (let i = 0; i < count; i++) {
+            let angle = (TWO_PI / count) * i;
+            push();
+            rotate(angle); 
+            translate(r, 0); 
+            rotate(PI/2); 
+            arc(0, 0, this.r*0.15, this.r*0.15, 0, PI); 
+            pop();
+        }
+    }
+
+  // Pattern 2: Solid Rings
+    drawMiddleSolidRings(col) {
+        this.drawHandDrawnCircle(this.r * 0.45, col, null, 0);
+        let col2 = random(patternPalette);
+        this.drawHandDrawnCircle(this.r * 0.3, col2, null, 0);
+    }
+
+  // Pattern 3: Concentric Wobbly Lines
+    drawMiddleConcentricIrregularLines(col) {
+        noFill();
+        stroke(col);
+        let baseStrokeWeight = this.r * 0.01; 
+        let numRings = 7; 
+        for (let j = 0; j < numRings; j++) {
+            let currentRadius = map(j, 0, numRings - 1, this.r * 0.2, this.r * 0.5);
+            strokeWeight(baseStrokeWeight * random(0.8, 1.2)); 
+            beginShape();
+            let points = 25; 
+            for (let i = 0; i <= points; i++) {
+                let angle = (TWO_PI / points) * i;
+                let jitter = random(-this.r * 0.025, this.r * 0.025); 
+                let radius = currentRadius + jitter;
+                curveVertex(cos(angle) * radius, sin(angle) * radius);
+            }
+            endShape(CLOSE);
+        }
+    }
+
+  // ================= INNER PATTERNS =================
+    displayInnerPattern() {
+        this.drawHandDrawnCircle(this.r * 0.25, random(circleBasePalette), null, 0);
+        let patCol = random(patternPalette);
+        
+        if (this.innerPatternType === 0) {
+        // Simple large blob (Center Eye)
+            this.drawIrregularBlob(0, 0, this.r * 0.15, patCol); // 0,0 is center
+        } else {
+        // Spiral Line
+            noFill();
+            stroke(patCol);
+            strokeWeight(this.r * 0.015);
+            // Here we again use beginShape() + curveVertex() to build a spiral-like
+            // path, applying the same hand-drawn curve technique to the inner core.
+            beginShape();
+            for (let i = 0; i < 50; i++) {
+                let r = map(i, 0, 50, 0, this.r * 0.2);
+                let angle = i * 0.4;
+                curveVertex(cos(angle)*r, sin(angle)*r);
+            }
+        endShape();
+        }
+    }
 }
 
 function setup() {
-  // Use min dimension to ensure square aspect ratio fits screen
-  let size = min(windowWidth, windowHeight);
-  createCanvas(size, size);
+    // Use min dimension to ensure square aspect ratio fits screen
+    let size = min(windowWidth, windowHeight);
+    createCanvas(size, size);
   
-  // NOTE: pixelDensity() was not covered in class. 
-  // It comes from the p5.js reference: https://p5js.org/reference/p5/pixelDensity/
-  // It increases the device pixel ratio so the artwork renders more sharply on high-DPI/Retina screens.
-  pixelDensity(2); 
+    // NOTE: pixelDensity() was not covered in class. 
+    // It comes from the p5.js reference: https://p5js.org/reference/p5/pixelDensity/
+    // It increases the device pixel ratio so the artwork renders more sharply on high-DPI/Retina screens.
+    pixelDensity(2); 
 
-  // --- 1. Colour palette system (Aboriginal-inspired style) ---
-  globalBgColor = color(30, 20, 15); // Deep, dark earth background
+    // --- 1. Colour palette system (Aboriginal-inspired style) ---
+    globalBgColor = color(30, 20, 15); // Deep, dark earth background
 
-  circleBasePalette = [
-    color(90, 40, 20),   //  (Red Ochre)
-    color(60, 30, 15),   //  (Deep Earth)
-    color(40, 45, 35),   //  (Bush Green)
-    color(110, 60, 30),  //  (Burnt Orange)
-    color(20, 20, 20)    //  (Charcoal)
-  ];
+    circleBasePalette = [
+        color(90, 40, 20),   //  (Red Ochre)
+        color(60, 30, 15),   //  (Deep Earth)
+        color(40, 45, 35),   //  (Bush Green)
+        color(110, 60, 30),  //  (Burnt Orange)
+        color(20, 20, 20)    //  (Charcoal)
+    ];
 
-  patternPalette = [
-    color(255, 255, 255), //  (Ceremony White)
-    color(255, 240, 200), //  (Cream)
-    color(255, 215, 0),   //  (Sun Yellow)
-    color(255, 140, 80),  //  (Bright Ochre)
-    color(160, 180, 140), //  (Sage)
-    color(200, 200, 210)  //  (Ash)
-  ];
+    patternPalette = [
+        color(255, 255, 255), //  (Ceremony White)
+        color(255, 240, 200), //  (Cream)
+        color(255, 215, 0),   //  (Sun Yellow)
+        color(255, 140, 80),  //  (Bright Ochre)
+        color(160, 180, 140), //  (Sage)
+        color(200, 200, 210)  //  (Ash)
+    ];
 }
 
 function draw() {
-  background(globalBgColor); 
+    background(globalBgColor); 
 
-  // 1. Background Texture
-  // Draw random white dots that fill the canvas to create atmosphere
-  drawBackgroundDots();
+    // 1. Background Texture
+    // Draw random white dots that fill the canvas to create atmosphere
+    drawBackgroundDots();
 
-  // 2. Layout Generation
-  // Calculate positions for all circles based on a fixed geometric grid
-  createFixedLayout();
+    // 2. Layout Generation
+    // Calculate positions for all circles based on a fixed geometric grid
+    createFixedLayout();
 
-  // 3. Connection Layer (Songlines)
-  // Draw wide network lines between selected circle centres (VIP nodes)
-  // Rendered BEFORE circles so lines appear to go *under* them
-  drawNetworkLines();
+    // 3. Connection Layer (Songlines)
+    // Draw wide network lines between selected circle centres (VIP nodes)
+    // Rendered BEFORE circles so lines appear to go *under* them
+    drawNetworkLines();
 
-  // 4. Main Circle Layer
-  // Iterate through all circle objects and call their display method
-  for (let c of circles) {
-    c.display();
-  }
-  
-  noLoop(); // Static artwork, stop looping
+    // 4. Main Circle Layer
+    // Iterate through all circle objects and call their display method
+    for (let c of circles) {
+        c.display();
+    }
+    
+    noLoop(); // Static artwork, stop looping
 }
