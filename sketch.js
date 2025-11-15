@@ -244,25 +244,25 @@ class Circle {
         let patCol = random(patternPalette);
 
         switch (this.outerPatternType) {
-        case 0: this.drawOuterDotsPattern(patCol); break;
-        case 1: this.drawOuterRadiatingLinesPattern(patCol); break;
-        case 2: this.drawOuterStripedRingPattern(patCol); break;
-        case 3: this.drawOuterRadialDashPattern(patCol); break; 
+            case 0: this.drawOuterDotsPattern(patCol); break;
+            case 1: this.drawOuterRadiatingLinesPattern(patCol); break;
+            case 2: this.drawOuterStripedRingPattern(patCol); break;
+            case 3: this.drawOuterRadialDashPattern(patCol); break; 
+        }
     }
-  }
 
   // Pattern 0: Irregular Dots Ring
     drawOuterDotsPattern(col) {
         let dotSize = this.r * 0.07; 
         let dotSpacing = this.r * 0.09; 
         for (let radius = this.r * 0.65; radius < this.r * 0.95; radius += dotSpacing) { 
-        let count = floor((TWO_PI * radius) / dotSpacing);
-        for (let i = 0; i < count; i++) {
-            let angle = (TWO_PI / count) * i;
-            this.drawIrregularBlob(radius, angle, dotSize, col);
-      }
+            let count = floor((TWO_PI * radius) / dotSpacing);
+            for (let i = 0; i < count; i++) {
+                let angle = (TWO_PI / count) * i;
+                this.drawIrregularBlob(radius, angle, dotSize, col);
+            }
+        }
     }
-  }
 
   // Pattern 1: Radiating Lines (Sunburst)
   // Uses rotate() to simplify drawing lines radiating from center
@@ -273,17 +273,17 @@ class Circle {
         strokeCap(ROUND);
         
         for (let i = 0; i < numLines; i++) {
-        let angle = (TWO_PI / numLines) * i + random(-0.05, 0.05);
-        
-        push(); 
-        rotate(angle); // Rotate context
-        // Draw line along the X-axis
-        line(this.r * 0.6, 0, this.r * 0.95, 0);
-        // Draw dot at the tip
-        this.drawIrregularBlob(this.r * 0.95, 0, this.r * 0.03, col); 
-        pop(); 
+            let angle = (TWO_PI / numLines) * i + random(-0.05, 0.05);
+            
+            push(); 
+            rotate(angle); // Rotate context
+            // Draw line along the X-axis
+            line(this.r * 0.6, 0, this.r * 0.95, 0);
+            // Draw dot at the tip
+            this.drawIrregularBlob(this.r * 0.95, 0, this.r * 0.03, col); 
+            pop(); 
+        }
     }
-  }
 
   // Pattern 2: Striped Ring
     drawOuterStripedRingPattern(col) {
@@ -295,8 +295,8 @@ class Circle {
             let radius = map(i, 0, numRings - 1, this.r * 0.65, this.r * 0.9);
             strokeWeight(baseStrokeWeight * random(0.8, 1.2)); 
             this.drawHandDrawnCircle(radius, null, col, null);
+        }
     }
-  }
 // Pattern 3: Radial Dash (Sine Wave Spring)
   // Uses sin() to create a continuous wavy circumference
  // This pattern also relies on beginShape() + curveVertex() to render the wavy outer contour as a continuous organic loop.
@@ -311,11 +311,11 @@ class Circle {
         
         beginShape();
         for (let j = 0; j <= totalPoints; j++) {
-        let angle = (TWO_PI / totalPoints) * j;
-        let offset = sin(angle * waveFrequency) * waveHeight;
-        let finalRadius = baseRadius + offset;
-        finalRadius += random(-this.r * 0.005, this.r * 0.005);
-        curveVertex(cos(angle) * finalRadius, sin(angle) * finalRadius);
+            let angle = (TWO_PI / totalPoints) * j;
+            let offset = sin(angle * waveFrequency) * waveHeight;
+            let finalRadius = baseRadius + offset;
+            finalRadius += random(-this.r * 0.005, this.r * 0.005);
+            curveVertex(cos(angle) * finalRadius, sin(angle) * finalRadius);
         }
         endShape(CLOSE); 
     }
@@ -327,151 +327,151 @@ class Circle {
         let patCol = random(patternPalette);
 
         switch (this.middlePatternType) {
-        case 0: this.drawMiddleConcentricDotsPattern(patCol); break;
-        case 1: this.drawMiddleUshapePattern(patCol); break;
-        case 2: this.drawMiddleSolidRings(patCol); break;
-        case 3: this.drawMiddleConcentricIrregularLines(patCol); break; 
+            case 0: this.drawMiddleConcentricDotsPattern(patCol); break;
+            case 1: this.drawMiddleUshapePattern(patCol); break;
+            case 2: this.drawMiddleSolidRings(patCol); break;
+            case 3: this.drawMiddleConcentricIrregularLines(patCol); break; 
         }
     }
 
   // Pattern 0: Concentric Dots
-  drawMiddleConcentricDotsPattern(col) {
-    let dotSize = this.r * 0.04;
-    for (let r = this.r * 0.2; r < this.r * 0.5; r += dotSize * 1.5) {
-      let count = floor((TWO_PI * r) / (dotSize * 1.5));
-      for (let i = 0; i < count; i++) {
-        let angle = (TWO_PI / count) * i;
-        this.drawIrregularBlob(r, angle, dotSize, col);
-      }
+    drawMiddleConcentricDotsPattern(col) {
+        let dotSize = this.r * 0.04;
+        for (let r = this.r * 0.2; r < this.r * 0.5; r += dotSize * 1.5) {
+            let count = floor((TWO_PI * r) / (dotSize * 1.5));
+            for (let i = 0; i < count; i++) {
+                let angle = (TWO_PI / count) * i;
+                this.drawIrregularBlob(r, angle, dotSize, col);
+            }
+        }
     }
-  }
 
   // Pattern 1: U-Shape Symbols
   // Represents a person sitting in Indigenous art
-  drawMiddleUshapePattern(col) {
-    noFill();
-    stroke(col);
-    strokeWeight(this.r * 0.02);
-    let count = 8;
-    let r = this.r * 0.35;
+    drawMiddleUshapePattern(col) {
+        noFill();
+        stroke(col);
+        strokeWeight(this.r * 0.02);
+        let count = 8;
+        let r = this.r * 0.35;
     
-    for (let i = 0; i < count; i++) {
-      let angle = (TWO_PI / count) * i;
-      push();
-      rotate(angle); 
-      translate(r, 0); 
-      rotate(PI/2); 
-      arc(0, 0, this.r*0.15, this.r*0.15, 0, PI); 
-      pop();
+        for (let i = 0; i < count; i++) {
+            let angle = (TWO_PI / count) * i;
+            push();
+            rotate(angle); 
+            translate(r, 0); 
+            rotate(PI/2); 
+            arc(0, 0, this.r*0.15, this.r*0.15, 0, PI); 
+            pop();
+        }
     }
-  }
 
   // Pattern 2: Solid Rings
-  drawMiddleSolidRings(col) {
-    this.drawHandDrawnCircle(this.r * 0.45, col, null, 0);
-    let col2 = random(patternPalette);
-    this.drawHandDrawnCircle(this.r * 0.3, col2, null, 0);
-  }
+    drawMiddleSolidRings(col) {
+        this.drawHandDrawnCircle(this.r * 0.45, col, null, 0);
+        let col2 = random(patternPalette);
+        this.drawHandDrawnCircle(this.r * 0.3, col2, null, 0);
+    }
 
   // Pattern 3: Concentric Wobbly Lines
-  drawMiddleConcentricIrregularLines(col) {
-    noFill();
-    stroke(col);
-    let baseStrokeWeight = this.r * 0.01; 
-    let numRings = 7; 
-    for (let j = 0; j < numRings; j++) {
-        let currentRadius = map(j, 0, numRings - 1, this.r * 0.2, this.r * 0.5);
-        strokeWeight(baseStrokeWeight * random(0.8, 1.2)); 
-        beginShape();
-        let points = 25; 
-        for (let i = 0; i <= points; i++) {
-            let angle = (TWO_PI / points) * i;
-            let jitter = random(-this.r * 0.025, this.r * 0.025); 
-            let radius = currentRadius + jitter;
-            curveVertex(cos(angle) * radius, sin(angle) * radius);
+    drawMiddleConcentricIrregularLines(col) {
+        noFill();
+        stroke(col);
+        let baseStrokeWeight = this.r * 0.01; 
+        let numRings = 7; 
+        for (let j = 0; j < numRings; j++) {
+            let currentRadius = map(j, 0, numRings - 1, this.r * 0.2, this.r * 0.5);
+            strokeWeight(baseStrokeWeight * random(0.8, 1.2)); 
+            beginShape();
+            let points = 25; 
+            for (let i = 0; i <= points; i++) {
+                let angle = (TWO_PI / points) * i;
+                let jitter = random(-this.r * 0.025, this.r * 0.025); 
+                let radius = currentRadius + jitter;
+                curveVertex(cos(angle) * radius, sin(angle) * radius);
+            }
+            endShape(CLOSE);
         }
-        endShape(CLOSE);
     }
-  }
 
   // ================= INNER PATTERNS =================
-  displayInnerPattern() {
-    this.drawHandDrawnCircle(this.r * 0.25, random(circleBasePalette), null, 0);
-    let patCol = random(patternPalette);
-    
-    if (this.innerPatternType === 0) {
-       // Simple large blob (Center Eye)
-       this.drawIrregularBlob(0, 0, this.r * 0.15, patCol); // 0,0 is center
-    } else {
-       // Spiral Line
-       noFill();
-       stroke(patCol);
-       strokeWeight(this.r * 0.015);
-        // Here we again use beginShape() + curveVertex() to build a spiral-like
-       // path, applying the same hand-drawn curve technique to the inner core.
-       beginShape();
-       for (let i = 0; i < 50; i++) {
-         let r = map(i, 0, 50, 0, this.r * 0.2);
-         let angle = i * 0.4;
-         curveVertex(cos(angle)*r, sin(angle)*r);
-       }
-       endShape();
+    displayInnerPattern() {
+        this.drawHandDrawnCircle(this.r * 0.25, random(circleBasePalette), null, 0);
+        let patCol = random(patternPalette);
+        
+        if (this.innerPatternType === 0) {
+        // Simple large blob (Center Eye)
+            this.drawIrregularBlob(0, 0, this.r * 0.15, patCol); // 0,0 is center
+        } else {
+        // Spiral Line
+            noFill();
+            stroke(patCol);
+            strokeWeight(this.r * 0.015);
+            // Here we again use beginShape() + curveVertex() to build a spiral-like
+            // path, applying the same hand-drawn curve technique to the inner core.
+            beginShape();
+            for (let i = 0; i < 50; i++) {
+                let r = map(i, 0, 50, 0, this.r * 0.2);
+                let angle = i * 0.4;
+                curveVertex(cos(angle)*r, sin(angle)*r);
+            }
+        endShape();
+        }
     }
-  }
 }
 
 function setup() {
-  // Use min dimension to ensure square aspect ratio fits screen
-  let size = min(windowWidth, windowHeight);
-  createCanvas(size, size);
+    // Use min dimension to ensure square aspect ratio fits screen
+    let size = min(windowWidth, windowHeight);
+    createCanvas(size, size);
   
-  // NOTE: pixelDensity() was not covered in class. 
-  // It comes from the p5.js reference: https://p5js.org/reference/p5/pixelDensity/
-  // It increases the device pixel ratio so the artwork renders more sharply on high-DPI/Retina screens.
-  pixelDensity(2); 
+    // NOTE: pixelDensity() was not covered in class. 
+    // It comes from the p5.js reference: https://p5js.org/reference/p5/pixelDensity/
+    // It increases the device pixel ratio so the artwork renders more sharply on high-DPI/Retina screens.
+    pixelDensity(2); 
 
-  // --- 1. Colour palette system (Aboriginal-inspired style) ---
-  globalBgColor = color(30, 20, 15); // Deep, dark earth background
+    // --- 1. Colour palette system (Aboriginal-inspired style) ---
+    globalBgColor = color(30, 20, 15); // Deep, dark earth background
 
-  circleBasePalette = [
-    color(90, 40, 20),   //  (Red Ochre)
-    color(60, 30, 15),   //  (Deep Earth)
-    color(40, 45, 35),   //  (Bush Green)
-    color(110, 60, 30),  //  (Burnt Orange)
-    color(20, 20, 20)    //  (Charcoal)
-  ];
+    circleBasePalette = [
+        color(90, 40, 20),   //  (Red Ochre)
+        color(60, 30, 15),   //  (Deep Earth)
+        color(40, 45, 35),   //  (Bush Green)
+        color(110, 60, 30),  //  (Burnt Orange)
+        color(20, 20, 20)    //  (Charcoal)
+    ];
 
-  patternPalette = [
-    color(255, 255, 255), //  (Ceremony White)
-    color(255, 240, 200), //  (Cream)
-    color(255, 215, 0),   //  (Sun Yellow)
-    color(255, 140, 80),  //  (Bright Ochre)
-    color(160, 180, 140), //  (Sage)
-    color(200, 200, 210)  //  (Ash)
-  ];
+    patternPalette = [
+        color(255, 255, 255), //  (Ceremony White)
+        color(255, 240, 200), //  (Cream)
+        color(255, 215, 0),   //  (Sun Yellow)
+        color(255, 140, 80),  //  (Bright Ochre)
+        color(160, 180, 140), //  (Sage)
+        color(200, 200, 210)  //  (Ash)
+    ];
 }
 
 function draw() {
-  background(globalBgColor); 
+    background(globalBgColor); 
 
-  // 1. Background Texture
-  // Draw random white dots that fill the canvas to create atmosphere
-  drawBackgroundDots();
+    // 1. Background Texture
+    // Draw random white dots that fill the canvas to create atmosphere
+    drawBackgroundDots();
 
-  // 2. Layout Generation
-  // Calculate positions for all circles based on a fixed geometric grid
-  createFixedLayout();
+    // 2. Layout Generation
+    // Calculate positions for all circles based on a fixed geometric grid
+    createFixedLayout();
 
-  // 3. Connection Layer (Songlines)
-  // Draw wide network lines between selected circle centres (VIP nodes)
-  // Rendered BEFORE circles so lines appear to go *under* them
-  drawNetworkLines();
+    // 3. Connection Layer (Songlines)
+    // Draw wide network lines between selected circle centres (VIP nodes)
+    // Rendered BEFORE circles so lines appear to go *under* them
+    drawNetworkLines();
 
-  // 4. Main Circle Layer
-  // Iterate through all circle objects and call their display method
-  for (let c of circles) {
-    c.display();
-  }
-  
-  noLoop(); // Static artwork, stop looping
+    // 4. Main Circle Layer
+    // Iterate through all circle objects and call their display method
+    for (let c of circles) {
+        c.display();
+    }
+    
+    noLoop(); // Static artwork, stop looping
 }
