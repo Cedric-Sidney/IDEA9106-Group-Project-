@@ -364,8 +364,6 @@ class Circle {
             translate(r, 0); 
             rotate(PI/2); 
             // arc() draws a semicircle from angle 0 to PI (180 degrees), creating a U-shape. 
-            // from the official p5.js reference: https://p5js.org/reference/p5/arc/
-            // The size of the arc is relative to the main circle's radius.
             arc(0, 0, this.r*0.15, this.r*0.15, 0, PI); 
             pop();
         }
