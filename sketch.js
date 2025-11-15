@@ -14,11 +14,6 @@ let circles;        // Stores all circle objects, although this step is not necc
 // it is useful for individual assignments as we may operate on individual circles.
 let connectedNodes; // Stores the circles selected as connection nodes (key "VIP" nodes)
 
-function windowResized() {
-    let size = min(windowWidth, windowHeight);
-    resizeCanvas(size, size);
-    draw();
-}
 
 // =========================================================================
 // ======================= Layout & Background =============================
@@ -29,6 +24,12 @@ function windowResized() {
 // lines between those nodes, and renders the random dot background texture
 // that sits underneath all circles.
 
+// --- Responsiveness ---
+function windowResized() {
+    let size = min(windowWidth, windowHeight);
+    resizeCanvas(size, size);
+    draw();
+}
 // --- Layout generation ---
 function createFixedLayout() {
     circles = [];  //initialise
@@ -218,31 +219,6 @@ class Circle {
         }
         endShape(CLOSE);
     }
-
- 
-    drawHandDrawnEllipse(rOffset, angle, w, h, rotation, col) {
-    // uses the same beginShape() + curveVertex() approach to construct a wobbly ellipse at a given offset. 
-    // The radii along the ellipse are randomly varied so the shape looks hand-drawn rather than
-    // mathematically perfect.
-        let x = cos(angle) * rOffset;
-        let y = sin(angle) * rOffset;
-
-        fill(col);
-        noStroke();
-        push();
-        translate(x, y);
-        rotate(rotation);
-        beginShape();
-        let points = 12; 
-        for (let i = 0; i <= points; i++) {
-        let a = (TWO_PI / points) * i;
-        let rx = (w / 2) + random(-w * 0.2, w * 0.2); 
-        let ry = (h / 2) + random(-h * 0.2, h * 0.2);
-        curveVertex(rx * cos(a), ry * sin(a));
-        }
-        endShape(CLOSE);
-        pop(); 
-  }
 
     // ================= OUTER PATTERNS =================
     displayOuterPattern() {
