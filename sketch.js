@@ -104,7 +104,7 @@ function drawBackgroundDots() {
       let y = random(height); // Random y position within canvas
     
       let dotSize = random(width * 0.002, width * 0.005);// Set dot size relative to canvas width for responsiveness.
-      let alpha = random(100, 200);  // We want the dots have different opacity, so they look like shining stars.
+      let alpha = random(100, 200);  // We want the dots have different opacity, so they look like shining stars!
           fill(255, 255, 255, alpha); // Pure white, varying opacity
           ellipse(x, y, dotSize);
     }
@@ -184,7 +184,7 @@ class Circle {
         translate(x, y); 
         rotate(random(TWO_PI)); // Random rotation for variety
         beginShape();
-        let points = 8; 
+        let points = 8;  
         for (let i = 0; i < points; i++) {
             let a = TWO_PI / points * i;
             // Jitter the radius of the dot itself
@@ -195,16 +195,19 @@ class Circle {
         pop();
     }
 
-  
+  // larger version of drawIrregularBlob() used to draw big circular motifs
     drawHandDrawnCircle(r, fillCol, strokeCol, strokeW) {
     // draws a large base circle with a slightly jittered radius, 
     // beginShape() + curveVertex(): described above to create an organic, hand-drawn outline.
+
+    //This function can be used to draw circles both with fill and without fill. 
         if (fillCol) fill(fillCol); else noFill();
         if (strokeCol) stroke(strokeCol); else noStroke();
         if (strokeW) strokeWeight(strokeW);
 
         beginShape();
-        let points = 50; 
+        let points = 50;  // if the number of points is too small, the circle will look like a polygon.
+        // if the number of points is too big, the circle will look like too perfect!
         for (let i = 0; i <= points; i++) {
             let angle = (TWO_PI / points) * i;
             // Jitter the main radius
@@ -242,10 +245,12 @@ class Circle {
 
   // ================= OUTER PATTERNS =================
     displayOuterPattern() {
+        // we want random color to increase the diversity of the outer patterns
         let baseColor = random(circleBasePalette);
         this.drawHandDrawnCircle(this.r, baseColor, color(0, 50), 2);
         let patCol = random(patternPalette);
 
+        // draw the outer pattern based on the pattern type
         switch (this.outerPatternType) {
             case 0: this.drawOuterDotsPattern(patCol); break;
             case 1: this.drawOuterRadiatingLinesPattern(patCol); break;
@@ -256,11 +261,15 @@ class Circle {
 
   // Pattern 0: Irregular Dots Ring
     drawOuterDotsPattern(col) {
-        let dotSize = this.r * 0.07; 
+        let dotSize = this.r * 0.07;  
         let dotSpacing = this.r * 0.09; 
+        // the dots ring starts from a radius of 0.65 times the radius of the circle
+        // and will end at 0.95 times the radius of the circle
+        // you can adjust all the parameters to achieve the effect you want
         for (let radius = this.r * 0.65; radius < this.r * 0.95; radius += dotSpacing) { 
-            let count = floor((TWO_PI * radius) / dotSpacing);
-            for (let i = 0; i < count; i++) {
+            let count = floor((TWO_PI * radius) / dotSpacing); // calculate the number of dots in this radius
+            //so the density of dots on each circle is identical
+            for (let i = 0; i < count; i++) {  // draw dots ring
                 let angle = (TWO_PI / count) * i;
                 this.drawIrregularBlob(radius, angle, dotSize, col);
             }
@@ -276,7 +285,7 @@ class Circle {
         strokeCap(ROUND);
         
         for (let i = 0; i < numLines; i++) {
-            let angle = (TWO_PI / numLines) * i + random(-0.05, 0.05);
+            let angle = (TWO_PI / numLines) * i + random(-0.05, 0.05); // add random jitter to each line
             
             push(); 
             rotate(angle); // Rotate context
@@ -293,11 +302,17 @@ class Circle {
         noFill();
         stroke(col);
         let baseStrokeWeight = this.r * 0.025; 
-        let numRings = 5; 
+        let numRings = 2;  // we only want 2 rings to make the pattern look more brief
+        // You can increase the number to get a more dense ring pattern
         for (let i = 0; i < numRings; i++) {
             let radius = map(i, 0, numRings - 1, this.r * 0.65, this.r * 0.9);
+            // The map() function scales a value from one range to another.
+            // Here, it takes the loop counter 'i' (which goes from 0 to numRings - 1)
+            // and converts it to a corresponding radius value within the desired range
+            // (from this.r * 0.65 to this.r * 0.9).
             strokeWeight(baseStrokeWeight * random(0.8, 1.2)); 
             this.drawHandDrawnCircle(radius, null, col, null);
+            // Because we don't want a circle with fill, we pass 'null' for fillCol.
         }
     }
 // Pattern 3: Radial Dash (Sine Wave Spring)
@@ -309,9 +324,12 @@ class Circle {
         strokeWeight(this.r * 0.025);
         let baseRadius = this.r * 0.73;
         let waveHeight = baseRadius * 0.30;
+        // waveHeight is the amplitude: how far the wave goes "in" and "out" from the baseRadius.
         let waveFrequency = 60;
-        let totalPoints = 240;
-        
+        // waveFrequency controls how many full oscillations (bounces) happen around the circle.
+        let totalPoints = 240;   
+        // totalPoints determines the smoothness (resolution) of the shape. More points = smoother.
+        // we use sin to create a wavy effect, it looks like a spring 
         beginShape();
         for (let j = 0; j <= totalPoints; j++) {
             let angle = (TWO_PI / totalPoints) * j;
@@ -333,11 +351,12 @@ class Circle {
             case 0: this.drawMiddleConcentricDotsPattern(patCol); break;
             case 1: this.drawMiddleUshapePattern(patCol); break;
             case 2: this.drawMiddleSolidRings(patCol); break;
-            case 3: this.drawMiddleConcentricIrregularLines(patCol); break; 
+            case 3: this.drawMiddleConcentricRings(patCol); break; 
         }
     }
 
   // Pattern 0: Concentric Dots
+  // small version of drawOuterConcentricDotsPattern
     drawMiddleConcentricDotsPattern(col) {
         let dotSize = this.r * 0.04;
         for (let r = this.r * 0.2; r < this.r * 0.5; r += dotSize * 1.5) {
@@ -355,16 +374,20 @@ class Circle {
         noFill();
         stroke(col);
         strokeWeight(this.r * 0.02);
-        let count = 8;
-        let r = this.r * 0.35;
+        let count = 8; // The total number of U-shapes to draw.
+        let r = this.r * 0.35; // The radius of the orbit (the circle) on which the U-shapes will be placed.
     
         for (let i = 0; i < count; i++) {
             let angle = (TWO_PI / count) * i;
+            // Calculate the angle for this specific shape's position around the circle.
+            // (e.g., 0, 45, 90, 135 degrees...)
             push();
             rotate(angle); 
             translate(r, 0); 
             rotate(PI/2); 
             arc(0, 0, this.r*0.15, this.r*0.15, 0, PI); 
+            // An arc from 0 to PI (180 degrees) creates a U-shape.
+            // The size of the arc is relative to the main circle's radius.
             pop();
         }
     }
@@ -376,14 +399,14 @@ class Circle {
         this.drawHandDrawnCircle(this.r * 0.3, col2, null, 0);
     }
 
-  // Pattern 3: Concentric Wobbly Lines
-    drawMiddleConcentricIrregularLines(col) {
+  // Pattern 3: Concentric Rings
+    drawMiddleConcentricRings(col) {
         noFill();
         stroke(col);
         let baseStrokeWeight = this.r * 0.01; 
-        let numRings = 7; 
+        let numRings = 5;  // The total number of concentric rings to draw.
         for (let j = 0; j < numRings; j++) {
-            let currentRadius = map(j, 0, numRings - 1, this.r * 0.2, this.r * 0.5);
+            let currentRadius = map(j, 0, numRings - 1, this.r * 0.3, this.r * 0.5);
             strokeWeight(baseStrokeWeight * random(0.8, 1.2)); 
             beginShape();
             let points = 25; 
